@@ -12,15 +12,52 @@
 #endif
 #include <stdio.h>
 
-Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes, int noCores)
+#ifdef _WIN32
+#include <windows.h>
+#elif MACOS
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#else
+#include <unistd.h>
+#endif
+
+int Fraktal_Manager::getNumCores() {
+#ifdef WIN32
+    SYSTEM_INFO sysinfo;
+    GetSystemInfo(&sysinfo);
+    return sysinfo.dwNumberOfProcessors;
+#elif MACOS
+    int nm[2];
+    size_t len = 4;
+    uint32_t count;
+
+    nm[0] = CTL_HW; nm[1] = HW_AVAILCPU;
+    sysctl(nm, 2, &count, &len, NULL, 0);
+
+    if(count < 1) {
+        nm[1] = HW_NCPU;
+        sysctl(nm, 2, &count, &len, NULL, 0);
+        if(count < 1) { count = 1; }
+    }
+    return count;
+#else
+    return sysconf(_SC_NPROCESSORS_ONLN);
+#endif
+}
+
+Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes)
 {
     this->xRes = xRes;
     this->yRes = yRes;
-    numCores = noCores;
+    midPointX = 0.0f;
+    midPointY = 0.0f;
+    range = 2;
+    numCores = getNumCores();
     numFract = -1;
     juliaC = std::complex<float>(0,0);
     juliaCchanged = false;
     useCPU = false;
+    rangeChanged = false;
     try
     {   // Init OpenCL Hander
         myCLHandler = new OpenCLHandler();
@@ -108,10 +145,10 @@ Fraktal_Manager::~Fraktal_Manager(){
 }
 
 void Fraktal_Manager::setJuliaCimag(double imag) {
-    if(imag <= 5.0 && imag >= -5.0){
+    if(imag <= 5.0f && imag >= -5.0f){
         juliaC.imag() = imag;
     } else {
-        juliaC.imag() = 0.0;
+        juliaC.imag() = 0.0f;
     }
     if(myCLHandler != NULL) {   // Also update Value in OpenCL
         cl_float2 clJuliaC; // Create constant for Julia Set to pass to OCL
@@ -124,10 +161,10 @@ void Fraktal_Manager::setJuliaCimag(double imag) {
     juliaCchanged = true;
 }
 void Fraktal_Manager::setJuliaCreal(double real){
-    if(real <= 5.0 && real >= -5.0){
+    if(real <= 5.0f && real >= -5.0f){
         juliaC.real() = real;
     } else {
-        juliaC.real() = 0.0;
+        juliaC.real() = 0.0f;
     }
     if(myCLHandler != NULL) {   // Also update Value in OpenCL
         cl_float2 clJuliaC; // Create constant for Julia Set to pass to OCL
@@ -143,10 +180,23 @@ void Fraktal_Manager::setJuliaC(std::complex<float> c) {
     setJuliaCimag(c.imag());
     setJuliaCreal(c.real());
 }
+void Fraktal_Manager::setRange(int delta){
+    // Delta is positive if the wheel is scrolled away from the user
+    // and negative if the wheel is scrolled towards the user
+    int mouseWheelSteps = delta / 120;
+    range = range - (range / 16.0f) * mouseWheelSteps;
+    rangeChanged = true;
+}
+void Fraktal_Manager::setMidPoint(int x, int y){
+    // Change midpoint of the image
+    midPointX += ((float) x/xRes - 0.5f) * range / 2.0f;
+    midPointY += ((float) y/yRes - 0.5f) * range / 2.0f;
+}
 
 QImage Fraktal_Manager::paint(int numFrac, std::complex<float> centerPoint){
-    if (this->numFract == numFrac && !juliaCchanged)  // If fractal not changed do nothing
-        return image;
+    if (this->numFract == numFrac && !juliaCchanged && !rangeChanged)
+        return image;   // If fractal or range not changed do nothing
+
     this->numFract = numFrac;
     juliaCchanged = false;
     QImage renderedImage = QImage(xRes, yRes, QImage::Format_RGB32);
@@ -158,19 +208,28 @@ QImage Fraktal_Manager::paint(int numFrac, std::complex<float> centerPoint){
         switch (numFrac){
         case Julia:
             funcObject = new JuliaFuncClass(renderedImage.width(),
-                                            renderedImage.height(), juliaC);
+                                            renderedImage.height(),
+                                            juliaC,
+                                            range,
+                                            midPointX, midPointY);
             break;
         case Mandelbrot:
             funcObject = new MandelbrotFuncClass(renderedImage.width(),
-                                                 renderedImage.height());
+                                                 renderedImage.height(),
+                                                 range,
+                                                 midPointX, midPointY);
             break;
         case BurningShip:
             funcObject = new BurningShipFuncClass(renderedImage.width(),
-                                                  renderedImage.height());
+                                                  renderedImage.height(),
+                                                  range,
+                                                  midPointX, midPointY);
             break;
         case Tricorn:
             funcObject = new TricornFuncClass(renderedImage.width(),
-                                              renderedImage.height());
+                                              renderedImage.height(),
+                                              range,
+                                              midPointX, midPointY);
             break;
         default:    // Action if GUI passes wrong index: return black image
             return renderedImage;
@@ -191,6 +250,20 @@ QImage Fraktal_Manager::paint(int numFrac, std::complex<float> centerPoint){
         delete funcObject;
 
     } else {
+        // Set variable kernel arguments: range, midpoint X, Y
+        switch (numFract){
+        case Julia:
+            myCLHandler->setKernelArg(Julia, 2, sizeof(cl_float), &range);
+            myCLHandler->setKernelArg(Julia, 3, sizeof(cl_float), &midPointX);
+            myCLHandler->setKernelArg(Julia, 4, sizeof(cl_float), &midPointY);
+            break;
+        default:    // For every other function the parameters have those indices
+            myCLHandler->setKernelArg(numFract, 1, sizeof(cl_float), &range);
+            myCLHandler->setKernelArg(numFract, 2, sizeof(cl_float), &midPointX);
+            myCLHandler->setKernelArg(numFract, 3, sizeof(cl_float), &midPointY);
+        }
+
+        // Enqueue the kernel to the respective fractal
         myCLHandler->enqueueKernel(numFrac, 2, globalWorkSize, localWorkSize);
         // Convert from HSV to RGB color space
         myCLHandler->enqueueKernel( 4, 2, globalWorkSize, localWorkSize);

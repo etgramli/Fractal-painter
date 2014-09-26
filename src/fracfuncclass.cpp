@@ -4,18 +4,19 @@
  */
 #include "fracfuncclass.h"
 
+
 float JuliaFuncClass::calcFract(float x, float y) {
-    return juliaPoint(xRes, yRes, x, y, c);
+    return juliaPoint(xRes, yRes, x, y, c, range, midX, midY);
 }
 
 float MandelbrotFuncClass::calcFract(float x, float y) {
-    return mandelbrotPoint(xRes, yRes, x, y);
+    return mandelbrotPoint(xRes, yRes, x, y, range, midX, midY);
 }
 
 float BurningShipFuncClass::calcFract(float x, float y) {
-    return burningShipPoint(xRes, yRes, x, y);
+    return burningShipPoint(xRes, yRes, x, y, range, midX, midY);
 }
 
 float TricornFuncClass::calcFract(float x, float y) {
-    return tricornPoint(xRes, yRes, x, y);
+    return tricornPoint(xRes, yRes, x, y, range, midX, midY);
 }

@@ -17,10 +17,8 @@ class RenderArea : public QWidget
 {
     Q_OBJECT
 public:
-    explicit RenderArea(QWidget *parent = 0, int numCores = 1, size_t xRes = 1280, size_t yRes = 720);
+    explicit RenderArea(QWidget *parent = 0);
     ~RenderArea();
-    void setResolution(int xRes, int yRes);
-    void setRange(double xRange, double yRange);
     void setRenderDevice(bool useCPU);
     void saveBmp();
     void paintImage(QPainter &painter);
@@ -34,6 +32,7 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent *event);
+    void wheelEvent(QWheelEvent *event);
 
 private:
     Ui::RenderArea *ui;
@@ -41,7 +40,6 @@ private:
     Fraktal_Manager *fraktal;
     int currentFraktal;
     size_t xRes, yRes;
-    double xRange, yRange;
 };
 
 #endif // RENDERAREA_H

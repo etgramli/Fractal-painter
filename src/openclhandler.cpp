@@ -1,7 +1,3 @@
-/* Implementation of my little OpenCL library
- * Copyright (C) 2014  Etienne Gramlich
- * See main.cpp for more information.
- */
 #include "openclhandler.h"
 #include <stdlib.h>
 #include <iostream>
@@ -9,11 +5,7 @@
 #include <sstream>
 #include <string>
 #include <string.h>
-#ifdef __APPLE__
-#include <OpenCL/cl.h>
-#else
 #include <CL/cl.h>
-#endif
 
 OpenCLHandler::OpenCLHandler() throw()
 {
@@ -250,7 +242,7 @@ cl_int OpenCLHandler::createCommandQueue(){
     return errNum;
 }
 
-cl_int OpenCLHandler::compileKernelFromFile(const char *filename){
+cl_int OpenCLHandler::compileKernelFromFile(char *filename){
     cl_int errNum = CL_BUILD_ERROR;
     std::ifstream kernelFile(filename, std::ios::in);
     if(!kernelFile.is_open()){

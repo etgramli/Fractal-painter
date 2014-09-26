@@ -3,7 +3,7 @@
  * Copyright (C) 2014  Etienne Gramlich
  * See main.cpp for more information.
  */
- #ifndef JULIAINPUTDIALOG_H
+#ifndef JULIAINPUTDIALOG_H
 #define JULIAINPUTDIALOG_H
 
 #include <QDialog>

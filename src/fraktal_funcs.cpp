@@ -11,11 +11,11 @@ inline float quadAbs(std::complex<float> a){
     return a.imag()*a.imag() + a.real()*a.real();
 }
 
-float juliaPoint(int xRes, int yRes,
-                 float x, float y, std::complex<float> c){
-    std::complex<float> cz =
-            std::complex<float>(1 - 2*x/xRes,
-                                1 - 2*y/yRes);
+float juliaPoint(int xRes, int yRes, float x, float y,
+                 std::complex<float> c, float range, float midX, float midY){
+    std::complex<float> cz(0.0f, 0.0f);
+    cz.real() = range * (x / (float)xRes - 0.5f) + midX;
+    cz.imag() = range * (y / (float)yRes - 0.5f) + midY;
     for(int l = 0; l < 360; l++){
         cz = std::pow(cz,2);    // cz = cz² + c
         cz += c;
@@ -25,10 +25,11 @@ float juliaPoint(int xRes, int yRes,
     return 0.0f;
 }
 
-float mandelbrotPoint(int xRes, int yRes, float x, float y) {
+float mandelbrotPoint(int xRes, int yRes, float x, float y, float range,
+                      float midX, float midY) {
     std::complex<float> c, z(0.0f, 0.0f);
-    c.real() = 1.5f - 3*x / xRes;
-    c.imag() = 1.0f - 2*y / yRes;
+    c.real() = 1.5f * range * (x / (float)xRes - 0.5f) + midX;
+    c.imag() = 1.0f * range * (y / (float)yRes - 0.5f) + midY;
     for(int l = 0; l < 360; l++){
         z = z*z + c;
         if(quadAbs(z) > 4)
@@ -37,10 +38,11 @@ float mandelbrotPoint(int xRes, int yRes, float x, float y) {
     return 0.0f;
 }
 
-float tricornPoint(int xRes, int yRes, float x, float y) {
+float tricornPoint(int xRes, int yRes, float x, float y, float range,
+                   float midX, float midY) {
     std::complex<float> c, z(0.0f, 0.0f);
-    c.real() = 1.5f - 3*x / xRes;
-    c.imag() = 1.0f - 2*y / yRes;
+    c.real() = 1.5f * range * (x / (float)xRes - 0.5f) + midX;
+    c.imag() = 1.0f * range * (y / (float)yRes - 0.5f) + midY;
     for(int l = 0; l < 360; l++){
         z = std::conj(z);
         z = z*z + c;
@@ -50,21 +52,19 @@ float tricornPoint(int xRes, int yRes, float x, float y) {
     return 0.0f;
 }
 
-float burningShipPoint(int xRes, int yRes, float x, float y)
+float burningShipPoint(int xRes, int yRes, float x, float y, float range,
+                       float midX, float midY)
 {
     std::complex<float> c, p, p0;
-    float range = 3.0f;
-    int iteratemax = 360;
-    c.real() = 2.0f * range * (x / (float)xRes - 0.5f);
-    c.imag() = 2.0f * range * (y / (float)yRes - 0.5f);
-
-    for(int l = 0; l < iteratemax; l++){
+    c.real() = 2.0f * range * (x / (float)xRes - 0.5f) + midX;
+    c.imag() = 2.0f * range * (y / (float)yRes - 0.5f) + midY;
+    for(int l = 0; l < 360; l++){
         p = std::complex<float>(std::fabs(p0.real()),
                                 std::fabs(p0.imag()));
         p = p*p + c;
         p0 = p;
         if (quadAbs(p) > 10)
-            return (float)l / iteratemax;
+            return (float)l / 360;
     }
     return 0.0f;
 }

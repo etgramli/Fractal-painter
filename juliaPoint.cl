@@ -4,12 +4,14 @@
  */
 
 __kernel void juliaPoint(__constant const float2 *c,
-						 __write_only image2d_t outImg){
+						 __write_only image2d_t outImg,
+                         float range, float midX, float midY){
 	int2 coord = (int2) (get_global_id(0), get_global_id(1));
-	int2 range = {get_global_size(0), get_global_size(1)};
+	int2 res = {get_global_size(0), get_global_size(1)};
 	float2 tmp, z = (float2)(0.0f);
-	z.x = (float)(range.x / 2.0 - coord.x) / (range.x / 2.0f);
-    z.y	= (float)(range.y / 2.0 - coord.y) / (range.y / 2.0f);
+	
+	z.x = range * (coord.x / (float)res.x - 0.5f) + midX;
+    z.y	= range * (coord.y / (float)res.y - 0.5f) + midY;
 	
 	int l;
     for(l = 0; l < 360; l++){

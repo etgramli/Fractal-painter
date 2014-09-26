@@ -2,17 +2,18 @@ Fractal painter
 *******************************************************************************
 
 This program paints the fractals listed below and allows you to save them as
-windows bitmap.
-You also can see if painting on your GPU via OpenCL is supported for each
-fractal.
+an image (windows bitmap).
+You can zoom in and out via the mouse wheel.
+It is also possible to render the fractals on your GPU via OpenCL. Look at the
+list below for supported fractals.
 The default language is English, but I made a German localization.
 *******************************************************************************
 
-Supproted fractals:
-- Julia-Set (CPU, OpenCL)
-- Mandelbrot-Set (CPU, OpenCL)
-- Burning Ship (CPU, OpenCL)
-- Tricorn (CPU)
+Supproted fractals (CPU and OpenCL):
+- Julia-Set
+- Mandelbrot-Set
+- Burning Ship
+- Tricorn
 *******************************************************************************
 
 How to compile:
@@ -28,6 +29,7 @@ directory because you need the *.cl files for OpenCL to work.
 Additionally you need the fraktal_de.qm for the German translation in the
 executable's directory.
 You can do a "out-of-source" build with the following commands for example:
+
 ccmake src/
 Press 'c', type in Release as CMake_Build_Type, again 'c' then 'g'.
 make
@@ -57,3 +59,6 @@ Version 1.4 - (2014-08-19)
 -Changed main language from German to Enlish
 -Added Geman as localization
 -Option for choosing rendering device
+
+Version 1.5 - (2014-09-26)
+-Zooming is now possible with both CPU and OpenCL (mouse wheel)

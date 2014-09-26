@@ -16,23 +16,29 @@
 class Fraktal_Manager
 {
 public:
-    Fraktal_Manager(size_t xRes = 1920, size_t yRes = 1080, int noCores = 1);
+    Fraktal_Manager(size_t xRes = 1920, size_t yRes = 1080);
     ~Fraktal_Manager();
     enum fraktal_Liste select_fraktal;
     void setJuliaCimag(double imag);
     void setJuliaCreal(double real);
     void setJuliaC(std::complex<float> c);
+    void setRange(int delta);
+    void setMidPoint(int x, int y);
     QImage paint(int numFrac, std::complex<float> centerPoint);
     void setCPUrender(bool useCPU);
 
 private:
+    int getNumCores();
     int numCores;
     int numFract;
     size_t xRes, yRes;
+    float range;
+    float midPointX, midPointY;
     QImage image;
     std::complex<float> juliaC;
     bool juliaCchanged;
     bool useCPU;
+    bool rangeChanged;
     OpenCLHandler *myCLHandler;
     cl_int errNum;
     size_t globalWorkSize[2];

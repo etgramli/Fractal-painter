@@ -18,7 +18,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    explicit MainWindow(int numCores, QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
 public slots:
@@ -40,10 +40,10 @@ private:
     int numFract;
     QList<QAction *> devList;
     bool useCPU;
-    /*
+
     QList<QAction *> colorList;
     int numColorMode;
-    */
+
 };
 
 #endif // MAINWINDOW_H

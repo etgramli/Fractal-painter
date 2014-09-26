@@ -4,36 +4,28 @@
  * See main.cpp for more information.
  */
 #include <QtGui>
+#include <QDesktopWidget>
+#include <QWheelEvent>
 #include "renderarea.h"
 #include "ui_renderarea.h"
 
-RenderArea::RenderArea(QWidget *parent, int numCores,
-                       size_t xRes, size_t yRes)
+RenderArea::RenderArea(QWidget *parent)
             : QWidget(parent), ui(new Ui::RenderArea)
 {
     ui->setupUi(this);
-    this->xRes = xRes;
-    this->yRes = yRes;
+    QDesktopWidget desktop; // Get the resolution od the main screen
+    this->xRes = desktop.availableGeometry(desktop.primaryScreen()).width();
+    this->yRes = desktop.availableGeometry(desktop.primaryScreen()).height();
     img = QImage(this->xRes, this->yRes, QImage::Format_ARGB32);
-    fraktal = new Fraktal_Manager(xRes, yRes, numCores);
+    fraktal = new Fraktal_Manager(xRes, yRes);
     currentFraktal = 1;
+    setEnabled(true);   // Must be enabled to recieve mouse wheel event
 }
 RenderArea::~RenderArea()
 {
     delete ui;
     delete fraktal;
 }
-
-void RenderArea::setResolution(int xRes, int yRes){
-    this->xRes = xRes;
-    this->yRes = yRes;
-}
-
-void RenderArea::setRange(double xRange, double yRange){
-    this->xRange = xRange;
-    this->yRange = yRange;
-}
-
 void RenderArea::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
@@ -67,4 +59,11 @@ void RenderArea::setJuliaCreal(double real) {
 }
 void RenderArea::setRenderDevice(bool useCPU){
     fraktal->setCPUrender(useCPU);
+}
+
+void RenderArea::wheelEvent(QWheelEvent *event){
+    fraktal->setMidPoint(event->x(), event->y());
+    fraktal->setRange(event->delta());
+    update();
+    event->accept();
 }

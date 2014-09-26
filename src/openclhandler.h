@@ -1,16 +1,8 @@
-/* Header of my little OpenCL library.
- * Copyright (C) 2014  Etienne Gramlich
- * See main.cpp for more information.
- */
 #ifndef OPENCLHANDLER_H
 #define OPENCLHANDLER_H
 
 #include <vector>
-#ifdef __APPLE__
-#include <OpenCL/cl.h>
-#else
 #include <CL/cl.h>
-#endif
 
 class OpenCLHandler
 {

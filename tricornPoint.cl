@@ -3,13 +3,15 @@
  * for a certain pixel / point
  */
 
-__kernel void tricornPoint(__write_only image2d_t outImg){
+__kernel void tricornPoint(__write_only image2d_t outImg,
+                           float range, float midX, float midY){
 	int2 coord = {get_global_id(0), get_global_id(1)};
-	int2 range = {get_global_size(0), get_global_size(1)};
+	int2 res = {get_global_size(0), get_global_size(1)};
 	float4 color = (float4)0.0f;
 	float2 c, tmp, z = (float2)(0.0f);	// Contains complex numbers
-	c.x = 1.5f - 3*coord.x / range.x;
-	c.y = 1.0f - 2*coord.y / range.y;
+	
+	c.x = 1.5f * range * (coord.x / (float)res.x - 0.5f) + midX;
+	c.y = 1.0f * range * (coord.y / (float)res.y - 0.5f) + midY;
 	
     for(int l = 0; l < 360; l++){
 		z.y *= -1;

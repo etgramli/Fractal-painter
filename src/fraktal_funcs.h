@@ -11,15 +11,20 @@ const double PI = 3.1415926535897324;
 inline float quadAbs(std::complex<float> a);
 
 // Functions for calculating points of fractals
-float juliaPoint(int xRes, int yRes, float x, float y, std::complex<float> c);
-float mandelbrotPoint(int xRes, int yRes, float x, float y);
+float juliaPoint(int xRes, int yRes, float x, float y, std::complex<float> c,
+                 float range, float midX, float midY);
+float mandelbrotPoint(int xRes, int yRes, float x, float y,
+                      float range, float midX, float midY);
 
 // DOES NOT WORK CURRENTLY
-float mandelbrotSinePoint(int xRes, int yRes, float x, float y);
+float mandelbrotSinePoint(int xRes, int yRes, float x, float y,
+                          float range, float midX, float midY);
 
-float tricornPoint(int xRes, int yRes, float x, float y);
+float tricornPoint(int xRes, int yRes, float x, float y,
+                   float range, float midX, float midY);
 
-float burningShipPoint(int xRes, int yRes, float x, float y);
+float burningShipPoint(int xRes, int yRes, float x, float y,
+                       float range, float midX, float midY);
 
 // Function(s) for colors
 struct colorRGB {

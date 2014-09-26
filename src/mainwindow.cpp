@@ -5,13 +5,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "openclhandler.h"
+
 #include <stdio.h>
 
-MainWindow::MainWindow(int numCores, QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     setWindowTitle(tr("Fractal painter"));
-    fraktalRenderArea = new RenderArea(this, numCores, 1920, 1080);
+    fraktalRenderArea = new RenderArea(this);
     setCentralWidget(fraktalRenderArea);
     setWindowState(Qt::WindowMaximized);
     numFract = Mandelbrot;
