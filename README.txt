@@ -16,7 +16,7 @@ Supproted fractals (CPU and OpenCL):
 - Tricorn
 *******************************************************************************
 
-How to compile:
+How to compile with CMake:
 ---------------
 Requred:
 --------
@@ -38,6 +38,21 @@ Or just run cmake in the src directory and copy the executable in the parent
 directory.
 
 Maybe you need to add Qt4.x\bin to the Path for find_package to be successful.
+*******************************************************************************
+
+How to compile with Qt Creator:
+---------------
+Requred:
+--------
+-Qt4 development files and Qt Creator
+-OpenCL development files
+
+In Fraktal.pro, replace
+"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v6.0/lib/Win32/"
+and
+"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v6.0/include"
+with the path of your OpenCL-Implementation.
+Then you can open the file with Qt Creator and compile it yourself.
 *******************************************************************************
 
 Log:
