@@ -7,6 +7,7 @@ You can zoom in and out via the mouse wheel.
 It is also possible to render the fractals on your GPU via OpenCL. Look at the
 list below for supported fractals.
 The default language is English, but I made a German localization.
+
 *******************************************************************************
 
 Supproted fractals (CPU and OpenCL):
@@ -14,10 +15,30 @@ Supproted fractals (CPU and OpenCL):
 - Mandelbrot-Set
 - Burning Ship
 - Tricorn
+
+*******************************************************************************
+
+Execute on Windows:
+-------------------
+There is a .zip file which contains the executable (.exe) and other files that
+are requred for execution.
+
+Content of the .zip archive:
+Fraktals.exe            The executable; libraries are statically linked
+README.txt              This README   
+fraktal_de.qm           German translation
+gpl-3.0.txt             Text of the GNU GPL - the license of this program
+
+burningShipPoint.cl     The OpenCL code to generate the burning ship fractal
+HSVtoRGB.cl             The OpenCL code to convert from HSV color space to RGB
+juliaPoint.cl           The OpenCL code to generate the julia set
+mandelbrotPoint.cl      The OpenCL code to generate the mandelbrot set
+tricornPoint            The OpenCL code to generate the tricorn
+
 *******************************************************************************
 
 How to compile with CMake:
----------------
+--------------------------
 Requred:
 --------
 -Qt4 development files
@@ -38,10 +59,11 @@ Or just run cmake in the src directory and copy the executable in the parent
 directory.
 
 Maybe you need to add Qt4.x\bin to the Path for find_package to be successful.
+
 *******************************************************************************
 
 How to compile with Qt Creator:
----------------
+-------------------------------
 Requred:
 --------
 -Qt4 development files and Qt Creator
@@ -53,6 +75,7 @@ and
 "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v6.0/include"
 with the path of your OpenCL-Implementation.
 Then you can open the file with Qt Creator and compile it yourself.
+
 *******************************************************************************
 
 Log:
