@@ -242,7 +242,7 @@ cl_int OpenCLHandler::createCommandQueue(){
     return errNum;
 }
 
-cl_int OpenCLHandler::compileKernelFromFile(char *filename){
+cl_int OpenCLHandler::compileKernelFromFile(const char *filename){
     cl_int errNum = CL_BUILD_ERROR;
     std::ifstream kernelFile(filename, std::ios::in);
     if(!kernelFile.is_open()){
