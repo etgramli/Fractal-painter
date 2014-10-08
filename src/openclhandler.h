@@ -26,7 +26,7 @@ private:
     cl_int createCommandQueue();
 
 public:
-    OpenCLHandler() throw();
+    OpenCLHandler()
     ~OpenCLHandler();
 
     // Prints information about the GPU device

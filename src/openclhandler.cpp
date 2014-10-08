@@ -7,7 +7,7 @@
 #include <string.h>
 #include <CL/cl.h>
 
-OpenCLHandler::OpenCLHandler() throw()
+OpenCLHandler::OpenCLHandler()
 {
     cl_int errNum;
     context = NULL;
