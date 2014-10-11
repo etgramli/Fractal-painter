@@ -18,7 +18,7 @@ RenderArea::RenderArea(QWidget *parent)
     this->yRes = desktop.availableGeometry(desktop.primaryScreen()).height();
     img = QImage(this->xRes, this->yRes, QImage::Format_ARGB32);
     fraktal = new Fraktal_Manager(xRes, yRes);
-    currentFraktal = 1;
+    currentFraktal = Mandelbrot;
     setEnabled(true);   // Must be enabled to recieve mouse wheel event
 }
 RenderArea::~RenderArea()
@@ -31,7 +31,8 @@ void RenderArea::paintEvent(QPaintEvent *event){
     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
     painter.fillRect(event->rect(), QBrush(Qt::white));
 
-    img = fraktal->paint(currentFraktal, std::complex<float>(0,0));
+    fraktal->setFractal(currentFraktal);
+    img = fraktal->paint(std::complex<float>(0,0));
     painter.drawImage(0, 0, img);
 }
 void RenderArea::calculateImage(int numFractal){

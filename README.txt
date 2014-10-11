@@ -100,3 +100,8 @@ Version 1.4 - (2014-08-19)
 
 Version 1.5 - (2014-09-26)
 -Zooming is now possible with both CPU and OpenCL (mouse wheel)
+
+Version 1.6 - (2014-10-11)
+-Bugfix: After changing to another fractal you will bot longer stay zoomed in
+-About-Messagebox added toshow the license
+-Small performance improvement through reduction of multiplications

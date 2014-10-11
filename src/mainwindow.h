@@ -26,7 +26,7 @@ public slots:
     void renderImage();
     void changeFractal(QAction *action);
     void changeDevice(QAction *action);
-    //void changeColorMode(QAction *action);
+    void showAboutBox();
 
 protected:
 void  closeEvent(QCloseEvent*);

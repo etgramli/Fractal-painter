@@ -431,7 +431,7 @@ cl_int OpenCLHandler::enqueueKernel(size_t kernel_index, cl_uint work_dim,
             }
         }
     }
-    std::cout << "Enqueued kernel " << kernel_index << std::endl;
+    //std::cout << "Enqueued kernel " << kernel_index << std::endl;
     return errNum;
 }
 

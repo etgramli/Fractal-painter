@@ -22,15 +22,17 @@ public:
     void setJuliaCimag(double imag);
     void setJuliaCreal(double real);
     void setJuliaC(std::complex<float> c);
+    void setFractal(int numFract);
     void setRange(int delta);
     void setMidPoint(int x, int y);
-    QImage paint(int numFrac, std::complex<float> centerPoint);
+    QImage paint(std::complex<float> centerPoint);
     void setCPUrender(bool useCPU);
 
 private:
     int getNumCores();
     int numCores;
     int numFract;
+    bool fractChanged;
     size_t xRes, yRes;
     float range;
     float midPointX, midPointY;
@@ -45,6 +47,5 @@ private:
     size_t localWorkSize[2];
     unsigned char *buffer;
 };
-
 
 #endif // FRAKTAL_MANAGER_H

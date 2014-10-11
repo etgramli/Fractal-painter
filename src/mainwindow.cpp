@@ -5,8 +5,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "openclhandler.h"
-
-#include <stdio.h>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -91,22 +90,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
         this->useCPU = false;
         useGPU->setChecked(true);
     }
-/*
-    QAction *colorAction = new QAction(tr("&Farbe"), this);
-    colorAction->setCheckable(true);
-    colorAction->setShortcut(tr("Ctrl+F"));
-    colorAction->setStatusTip("Benutze Farben");
-    QAction *grayscaleAction = new QAction(tr("&Graustufen"), this);
-    grayscaleAction->setCheckable(true);
-    grayscaleAction->setShortcut(tr("Ctrl+G"));
-    grayscaleAction->setStatusTip("Benutze Graustufen");
-    QActionGroup *colorModeList = new QActionGroup(this);
-    colorModeList->addAction(colorAction);
-    colorModeList->addAction(grayscaleAction);
-    colorList = colorModeList->actions();
-    colorAction->setChecked(true);
-    optionMenu->addActions(colorModeList->actions());
-*/
+
+    // About Message Box
+    QAction *aboutMessage = new QAction(tr("&About"), this);
+    menuBar()->addAction(aboutMessage);
 
     juliaDialog = new JuliaInputDialog(fraktalRenderArea);
 
@@ -114,9 +101,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
             this,        SLOT(changeFractal(QAction*)) );
     connect(deviceGroup, SIGNAL(triggered(QAction*)),
             this,        SLOT(changeDevice(QAction*))  );
-    /*
-    connect(colorModeList, SIGNAL(triggered(QAction*)),
-            this,        SLOT(changeColorMode(QAction*)) );*/
+    connect(aboutMessage, SIGNAL(triggered()),
+            this,         SLOT(showAboutBox()) );
 }
 
 MainWindow::~MainWindow()
@@ -160,22 +146,10 @@ void MainWindow::changeDevice(QAction *action){
     fraktalRenderArea->setRenderDevice(useCPU);
 }
 
-/*
-void MainWindow::changeColorMode(QAction *action){
-    int numNew = colorList.indexOf(action);
-    if (numFract == numNew)
-        return;
-    numColorMode = numNew;
 
-    switch (numFract) {
-    case 0:
-        //Set render mode to color
-        break;
-    case 1:
-        //Set render mode to grayscale
-        break;
-    }
-}*/
+void MainWindow::showAboutBox(){
+    QMessageBox::information(this, tr("About"), tr("This program uses the Qt framework and OpenCL.\n Licensed under GPLv3. http://www.gnu.org/licenses/gpl-3.0"));
+}
 
 void MainWindow::closeEvent(QCloseEvent*)
 {

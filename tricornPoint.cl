@@ -8,21 +8,28 @@ __kernel void tricornPoint(__write_only image2d_t outImg,
 	int2 coord = {get_global_id(0), get_global_id(1)};
 	int2 res = {get_global_size(0), get_global_size(1)};
 	float4 color = (float4)0.0f;
-	float2 c, tmp, z = (float2)(0.0f);	// Contains complex numbers
+	float2 c, z = (float2)(0.0f);	// Contains complex numbers
 	
 	c.x = 1.5f * range * (coord.x / (float)res.x - 0.5f) + midX;
 	c.y = 1.0f * range * (coord.y / (float)res.y - 0.5f) + midY;
-	
+
+	z.y *= -1;
+	float xsqr = z.x * z.x;
+	float ysqr = z.y * z.y;
     for(int l = 0; l < 360; l++){
-		z.y *= -1;
-        tmp.x = z.x*z.x - z.y*z.y;
-		tmp.y = z.y * z.x * 2;
-		z = tmp + c;
-        if(dot(z,z) > 4.0f){
+		z.y = z.y * z.x;
+		z.y += z.y;
+        z.x = xsqr - ysqr;
+		z = z + c;
+		
+        if(xsqr + ysqr > 4.0f){
 			color = (float)l / (float)360;
 			write_imagef(outImg, coord, color);
             return;
 		}
+		z.y *= -1;
+		xsqr = z.x * z.x;
+		ysqr = z.y * z.y;
     }
 	color = 0.0f;
     write_imagef(outImg, coord, color);

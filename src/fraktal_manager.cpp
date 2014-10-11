@@ -53,7 +53,7 @@ Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes)
     midPointY = 0.0f;
     range = 2;
     numCores = getNumCores();
-    numFract = -1;
+    numFract = Julia;
     juliaC = std::complex<float>(0,0);
     juliaCchanged = false;
     useCPU = false;
@@ -62,16 +62,19 @@ Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes)
     {   // Init OpenCL Hander
         myCLHandler = new OpenCLHandler();
 
+        // Names of the OpenCL kernels
         const char *clKernelNames[5] = {"juliaPoint.cl",
                                         "mandelbrotPoint.cl",
                                         "burningShipPoint.cl",
                                         "tricornPoint.cl",
                                         "HSVtoRGB.cl"};
+
         globalWorkSize[0] = xRes;   // Set the work sizes so that each kernel
         globalWorkSize[1] = yRes;   // can query its pixel position
         localWorkSize[0] = 1;       // Work size for work groups; May set them
         localWorkSize[1] = 1;       // to 0 for performance improvement by Implementation
-        // Image to write to by OCL functions store the fractal value as float
+
+        // Image to write to by OCL functions store the fractal values as float
         myCLHandler->create2DImageA(xRes, yRes, NULL);
         // Image that holds the RGB valus after converting from HSV
         myCLHandler->create2DImageARGB(xRes, yRes, NULL);
@@ -193,11 +196,25 @@ void Fraktal_Manager::setMidPoint(int x, int y){
     midPointY += ((float) y/yRes - 0.5f) * range / 2.0f;
 }
 
-QImage Fraktal_Manager::paint(int numFrac, std::complex<float> centerPoint){
-    if (this->numFract == numFrac && !juliaCchanged && !rangeChanged)
+void Fraktal_Manager::setFractal(int numFract){
+    if(numFract == this->numFract)
+        return;
+    else if (numFract > Tricorn)
+        return;
+    else {
+        fractChanged = true;
+        this->numFract = numFract;
+        // If another fractal chosen reset range and midpoint
+        range = 2;
+        midPointX = 0.0f;
+        midPointY = 0.0f;
+    }
+}
+
+QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
+    if (!fractChanged && !juliaCchanged && !rangeChanged)
         return image;   // If fractal or range not changed do nothing
 
-    this->numFract = numFrac;
     juliaCchanged = false;
     QImage renderedImage = QImage(xRes, yRes, QImage::Format_RGB32);
 
@@ -205,7 +222,7 @@ QImage Fraktal_Manager::paint(int numFrac, std::complex<float> centerPoint){
 
     // Use CPU if OpenCL-Handler creation or kernel creation failed
     if(myCLHandler == NULL || useCPU){
-        switch (numFrac){
+        switch (numFract){
         case Julia:
             funcObject = new JuliaFuncClass(renderedImage.width(),
                                             renderedImage.height(),
@@ -264,7 +281,7 @@ QImage Fraktal_Manager::paint(int numFrac, std::complex<float> centerPoint){
         }
 
         // Enqueue the kernel to the respective fractal
-        myCLHandler->enqueueKernel(numFrac, 2, globalWorkSize, localWorkSize);
+        myCLHandler->enqueueKernel(numFract, 2, globalWorkSize, localWorkSize);
         // Convert from HSV to RGB color space
         myCLHandler->enqueueKernel( 4, 2, globalWorkSize, localWorkSize);
         // Copy back image from OpenCL device
@@ -282,6 +299,7 @@ QImage Fraktal_Manager::paint(int numFrac, std::complex<float> centerPoint){
     image = renderedImage;
     return renderedImage;
 }
+
 void Fraktal_Manager::setCPUrender(bool useCPU){
     this->useCPU = useCPU;
 }
