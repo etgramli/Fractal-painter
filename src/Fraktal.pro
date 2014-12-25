@@ -5,13 +5,19 @@
 #-------------------------------------------------
 
 QT       += core gui
-QT       += widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = Fraktal
 TEMPLATE = app
 
+static {
+    CONFIG += static
+    DEFINES += STATIC
+    message("~~~ static build ~~~") # this is for information, that the static build is done
+    mac: TARGET = $$join(TARGET,,,_static) #this adds an _static in the end, so you can seperate static build from non static build
+    win32: TARGET = $$join(TARGET,,,s) #this adds an s in the end, so you can seperate static build from non static build
+}
 SOURCES += main.cpp\
         mainwindow.cpp \
         renderarea.cpp \

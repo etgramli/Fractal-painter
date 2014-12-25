@@ -105,3 +105,7 @@ Version 1.6 - (2014-10-11)
 -Bugfix: After changing to another fractal you will bot longer stay zoomed in
 -About-Messagebox added toshow the license
 -Small performance improvement through reduction of multiplications
+
+Version 1.7 - (2014-12-25)
+-Console Output is redirected to two files: "log_error.txt" and "log_out.txt"
+-The iterations are now variable; this should result in a small preformance improvement if not zoomed in

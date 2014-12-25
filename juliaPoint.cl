@@ -12,16 +12,21 @@ __kernel void juliaPoint(__constant const float2 *c,
 
 	z.x = range * (coord.x / (float)res.x - 0.5f) + midX;
     z.y	= range * (coord.y / (float)res.y - 0.5f) + midY;
+	
+    // Calcuate max. interations depending on the level of zoom
+    int maxiter = 360;
+    if(range > 0.0036)
+        maxiter = 360 - (float)140*range;
 
 	float xsqr = z.x * z.x;
 	float ysqr = z.y * z.y;
-    for(int l = 0; l < 360; l++){
+    for(int l = 0; l < maxiter; l++){
 		z.y = z.x * z.y;
 		z.y += z.y;
 		z.x = xsqr - ysqr;
 		z += *c;
         if(xsqr + ysqr > 1000){
-			write_imagef(outImg, coord, (float)l / 360);
+			write_imagef(outImg, coord, (float)l / maxiter);
             return;
         }
 		xsqr = z.x * z.x;

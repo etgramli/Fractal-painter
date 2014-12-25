@@ -8,7 +8,7 @@
 #include <complex>
 
 const double PI = 3.1415926535897324;
-inline float quadAbs(std::complex<float> a);
+inline float sqrAbs(std::complex<float> a);
 
 // Functions for calculating points of fractals
 float juliaPoint(int xRes, int yRes, float x, float y, std::complex<float> c,

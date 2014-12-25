@@ -22,11 +22,18 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    // Load localization
     QTranslator editTranslator;
     QString filename;
     filename = QString("Fraktal_%1").arg(QLocale::system().name());
     editTranslator.load(filename, qApp->applicationDirPath() );
     a.installTranslator(&editTranslator);
+
+    // Redirect stdout and stderr to corresponding (log-)files
+    freopen("log_out.txt", "w", stdout);
+    freopen("log_error.txt", "w", stderr);
+
     MainWindow w;
     w.show();
     return a.exec();

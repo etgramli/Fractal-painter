@@ -222,6 +222,7 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
 
     // Use CPU if OpenCL-Handler creation or kernel creation failed
     if(myCLHandler == NULL || useCPU){
+        // Initialize CPU to calculate fractals
         switch (numFract){
         case Julia:
             funcObject = new JuliaFuncClass(renderedImage.width(),
@@ -267,6 +268,7 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
         delete funcObject;
 
     } else {
+        // Initialize CPU to calculate fractals
         // Set variable kernel arguments: range, midpoint X, Y
         switch (numFract){
         case Julia:

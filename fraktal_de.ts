@@ -154,7 +154,15 @@
         <translation>Über</translation>
     </message>
     <message>
-        <location filename="mainwindow.cpp" line="151"/>
+        <location filename="mainwindow.cpp" line="152"/>
+        <source>This program uses the Qt framework and OpenCL.
+ Licensed under GPLv3. http://www.gnu.org/licenses/gpl-3.0
+Author(s): Etienne Gramlich</source>
+        <translation>Dieses Programm benutzt Qt und OpenCL.
+Lizenziert unter der GPLv3.
+Autor(en): Etienne Gramlich</translation>
+    </message>
+    <message>
         <source>This program uses the Qt framework and OpenCL.
  Licensed under GPLv3. http://www.gnu.org/licenses/gpl-3.0</source>
         <translatorcomment>Newline funktioniert im Linguist nicht</translatorcomment>

@@ -12,18 +12,23 @@ __kernel void burningShipPoint(__write_only image2d_t outImg,
 
 	c.x = 2.0f * range * (coord.x / (float)res.x - 0.5f) + midX;
 	c.y = 2.0f * range * (coord.y / (float)res.y - 0.5f) + midY;
+	
+    // Calcuate max. interations depending on the level of zoom
+    int maxiter = 360;
+    if(range > 0.0036)
+        maxiter = 360 - (float)140*range;
 
     p = fabs(p);
 	float xsqr = p.x * p.x;
 	float ysqr = p.y * p.y;
-    for(int l = 0; l < 360; l++){
+    for(int l = 0; l < maxiter; l++){
 		p.y = p.x * p.y;
 		p.y += p.y;
 		p.y += c.y;
         p.x = xsqr - ysqr + c.x;
 
         if(xsqr + ysqr > 10.0f){
-			color = (float)l / (float)360;
+			color = (float)l / (float)maxiter;
 			write_imagef(outImg, coord, color);
             return;
 		}

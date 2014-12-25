@@ -148,7 +148,8 @@ void MainWindow::changeDevice(QAction *action){
 
 
 void MainWindow::showAboutBox(){
-    QMessageBox::information(this, tr("About"), tr("This program uses the Qt framework and OpenCL.\n Licensed under GPLv3. http://www.gnu.org/licenses/gpl-3.0"));
+    QMessageBox::information(this, tr("About"),
+                             tr("This program uses the Qt framework and OpenCL.\n Licensed under GPLv3. http://www.gnu.org/licenses/gpl-3.0\nAuthor(s): Etienne Gramlich"));
 }
 
 void MainWindow::closeEvent(QCloseEvent*)
