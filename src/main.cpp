@@ -41,5 +41,8 @@ int main(int argc, char *argv[])
 
     fclose(stdout);
     fclose(stderr);
+    fclose(out);
+    fclose(err);
+
     return retVal;
 }

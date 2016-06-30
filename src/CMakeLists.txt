@@ -25,4 +25,3 @@ add_executable( fraktal ${fraktal_SRC} ${fraktal_HEADERS_MOC} )
 
 target_link_libraries(fraktal ${QT_LIBRARIES})
 target_link_libraries(fraktal OpenCL)
-

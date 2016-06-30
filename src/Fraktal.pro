@@ -42,7 +42,9 @@ FORMS    +=
 
 TRANSLATIONS = fraktal_de.ts
 
+LIBS += -lOpenCL
+
 win32: LIBS += "-LC:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v6.0/lib/Win32/" -lOpenCL
 
-INCLUDEPATH += "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v6.0/include"
-DEPENDPATH += "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v6.0/include"
+win32: INCLUDEPATH += "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v6.0/include"
+win32: DEPENDPATH += "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v6.0/include"
