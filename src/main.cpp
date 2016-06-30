@@ -18,6 +18,7 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QLocale>
+#include <cstdio>
 
 int main(int argc, char *argv[])
 {
@@ -31,10 +32,14 @@ int main(int argc, char *argv[])
     a.installTranslator(&editTranslator);
 
     // Redirect stdout and stderr to corresponding (log-)files
-    freopen("log_out.txt", "w", stdout);
-    freopen("log_error.txt", "w", stderr);
+    FILE *out = freopen("log_out.txt", "w", stdout);
+    FILE *err = freopen("log_error.txt", "w", stderr);
 
     MainWindow w;
     w.show();
-    return a.exec();
+    int retVal = a.exec();
+
+    fclose(stdout);
+    fclose(stderr);
+    return retVal;
 }
