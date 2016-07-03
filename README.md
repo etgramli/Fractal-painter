@@ -13,7 +13,9 @@ The default language is English, but I made a German localization.
 - Tricorn
 
 
-## How to compile with CMake (Linux):
+## Compiling
+
+### How to compile with CMake (Linux):
 
 Required packages:
 - Qt4 development files
@@ -34,7 +36,7 @@ Or just run cmake in the src directory and copy the executable in the parent dir
 Maybe you need to add Qt4.x\bin to the Path for find_package to be successful.
 
 
-# How to compile with Qt Creator:
+### How to compile with Qt Creator:
 Requred Packages:
 - Qt4 development files
 - Qt Creator
