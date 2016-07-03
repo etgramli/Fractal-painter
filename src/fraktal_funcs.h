@@ -7,7 +7,6 @@
 
 #include <complex>
 
-const double PI = 3.1415926535897324;
 inline float sqrAbs(std::complex<float> a);
 
 // Functions for calculating points of fractals
