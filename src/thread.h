@@ -6,6 +6,7 @@
 #define THREAD_H
 
 #include <QThread>
+// TODO: Migrate to C++11 Threads
 #include <QImage>
 #include <complex>
 #include "fracfuncclass.h"

@@ -190,7 +190,7 @@ cl_int OpenCLHandler::clGetGPUDevice() {
                                 CL_DEVICE_TYPE_GPU,
                                 1, &GPUDevice, NULL);
         printf("\n\nSelected Device:\n");
-        printTmpDeviceInfo(GPUDevice);
+        printDeviceInfo(GPUDevice);
 
         if (errNum == CL_SUCCESS) {
             usedPlatform = l;
