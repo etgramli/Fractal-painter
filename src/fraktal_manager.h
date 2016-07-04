@@ -11,7 +11,7 @@
 #include "fraktal_List.h"
 #include <complex>
 #include "thread.h"
-#include "openclhandler.h"
+#include "opencl/openclhandler.h"
 
 class Fraktal_Manager
 {

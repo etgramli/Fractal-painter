@@ -14,43 +14,44 @@ OpenCLHandler::OpenCLHandler()
     commandQueue = NULL;
     errNum = clGetPlatforms();
     std::cout << "Finished: Getting platforms" << std::endl;
-    if(errNum == CL_SUCCESS){
+    if(errNum == CL_SUCCESS) {
         errNum = interatePlatforms();
         std::cout << "Finished: Iterating platforms" << std::endl;
     }
-    if(errNum == CL_SUCCESS){
+    if(errNum == CL_SUCCESS) {
         errNum = clGetGPUDevice();
         std::cout << "Finished: Getting GPU device" << std::endl;
-    }/*
-    if(errNum == CL_SUCCESS){
-        errNum = printDeviceInfo();
+    }
+    if(errNum == CL_SUCCESS) {
+        errNum = printDeviceInfo(GPUDevice);
         std::cout << "Finished: printing device info" << std::endl;
-    }*/
-    if(errNum == CL_SUCCESS){
+    }
+    if(errNum == CL_SUCCESS) {
         errNum = createContext();
         std::cout << "Finished: Getting context" << std::endl;
     }
-    if(errNum == CL_SUCCESS){
+    if(errNum == CL_SUCCESS) {
         errNum = createCommandQueue();
         std::cout << "Finished: Getting command queue" << std::endl;
     }
-    if(errNum != CL_SUCCESS)
+    if(errNum != CL_SUCCESS) {
         throw "Failed to create object of OpenCLHandler!";
+    }
 }
 
 OpenCLHandler::~OpenCLHandler() {
     // Release OpenCL-Memory-Objects
-    for(size_t l = 0; l < memoryObjects.size(); l++){
+    for(size_t l = 0; l < memoryObjects.size(); l++) {
         clReleaseMemObject(memoryObjects.at(l));
     }
     memoryObjects.clear();
     // Release OpenCL-Kernel-Objects
-    for(size_t l = 0; l < kernels.size(); l++){
+    for(size_t l = 0; l < kernels.size(); l++) {
         clReleaseKernel(kernels.at(l));
     }
     kernels.clear();
     // Release OpenCL-Program-Objects
-    for(size_t l = 0; l < programs.size(); l++){
+    for(size_t l = 0; l < programs.size(); l++) {
         clReleaseProgram(programs.at(l));
     }
     programs.clear();
@@ -59,12 +60,11 @@ OpenCLHandler::~OpenCLHandler() {
     delete platforms;
 }
 
-cl_int OpenCLHandler::printDeviceInfo() {
+cl_int OpenCLHandler::printDeviceInfo(cl_device_id device) {
     cl_int errNum;
     size_t size;
     cl_ulong value;
     char *str;
-    cl_device_id device = GPUDevice;
 
     errNum = clGetDeviceInfo(device, CL_DEVICE_VENDOR,
                     0, NULL, &size);
@@ -162,10 +162,10 @@ cl_int OpenCLHandler::interatePlatforms(){
 cl_int OpenCLHandler::clGetPlatforms() {
     cl_int errNum;
     // Determine number of platforms
-    if((errNum = clGetPlatformIDs(0, NULL, &numPlatforms)) != CL_SUCCESS)
-        std::cerr << "No Platforms found\n";
-    else {
-        printf("%d Platforms found\n\n", numPlatforms);
+    if((errNum = clGetPlatformIDs(0, NULL, &numPlatforms)) != CL_SUCCESS) {
+        std::cerr << "No Platform found\n";
+    } else {
+        printf("%d Platform(s) found\n\n", numPlatforms);
         // Get List of platforms
         platforms = (cl_platform_id *)  malloc(sizeof(cl_platform_id) * numPlatforms);
         errNum = clGetPlatformIDs(numPlatforms, platforms, NULL);
@@ -174,23 +174,32 @@ cl_int OpenCLHandler::clGetPlatforms() {
 }
 
 cl_int OpenCLHandler::clGetGPUDevice() {
+    GPUDevice = NULL;
     cl_int errNum = CL_SUCCESS;
     cl_uint numDevices;
     std::cout << numPlatforms << " Platforms" << std::endl;
     for(cl_uint l = 0; l < numPlatforms; l++){
+        numDevices = 0;
+        printf("\n\nGetting GPU device IDs\n");
         errNum = clGetDeviceIDs(platforms[l], CL_DEVICE_TYPE_GPU, 0, NULL, &numDevices);
-        if(numDevices < 1)
+        if(numDevices < 1) {
             continue;
+        }
+        printf("\n\nQuery 1st GPU Device\n");
         errNum = clGetDeviceIDs(platforms[l],
                                 CL_DEVICE_TYPE_GPU,
                                 1, &GPUDevice, NULL);
-        if (errNum == CL_SUCCESS){
+        printf("\n\nSelected Device:\n");
+        printTmpDeviceInfo(GPUDevice);
+
+        if (errNum == CL_SUCCESS) {
             usedPlatform = l;
             return errNum;
         }
     }
-    if (errNum != CL_SUCCESS)
+    if (GPUDevice == NULL) {
         std::cerr << "No GPU found\n";
+    }
     return errNum;
 }
 
@@ -485,10 +494,11 @@ bool OpenCLHandler::overwriteMemObj(size_t index, size_t arg_size,
     clReleaseMemObject(memoryObjects[index]);
     // Create new memory object at the same index
     memoryObjects[index] = clCreateBuffer(context, flags, arg_size, arg_value, &errNum);
-    if(errNum != CL_SUCCESS)
+    if(errNum != CL_SUCCESS) {
         return false;
-    else
+    } else {
         return true;
+    }
 }
 
 cl_mem OpenCLHandler::getMemObj(size_t idx){
@@ -502,7 +512,7 @@ cl_int OpenCLHandler::getImageFromDevice(size_t idx, size_t region[3],
     errNum = clEnqueueReadImage(commandQueue, memoryObjects[idx], CL_TRUE,
                                 origin, region, 0, 0, dest,
                                 0, NULL, NULL);
-    if(errNum != CL_SUCCESS){
+    if(errNum != CL_SUCCESS) {
         std::cerr << "Failed to read image from device" << std::endl;
     }
     return errNum;

@@ -26,7 +26,7 @@ SOURCES += main.cpp\
         fracfuncclass.cpp \
         fraktal_funcs.cpp \
         juliainputdialog.cpp \
-        openclhandler.cpp
+        opencl/openclhandler.cpp
 
 HEADERS  += mainwindow.h \
             renderarea.h \
@@ -36,7 +36,7 @@ HEADERS  += mainwindow.h \
             thread.h \
             fracfuncclass.h \
             juliainputdialog.h \
-            openclhandler.h
+            opencl/openclhandler.h
 
 FORMS    +=
 

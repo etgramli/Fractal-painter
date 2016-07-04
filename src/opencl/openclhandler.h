@@ -30,7 +30,8 @@ public:
     ~OpenCLHandler();
 
     // Prints information about the GPU device
-    cl_int printDeviceInfo();
+    cl_int printDeviceInfo(cl_device_id device);
+
     /* Compiles the kernel in the file specified by filename,
      * creates a program object and a kernel object.
      * The filename msut have the extension .cl and has to
