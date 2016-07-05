@@ -2,15 +2,18 @@
  * Copyright (C) 2014  Etienne Gramlich
  * See main.cpp for more information.
  */
+
 #include "fraktal_manager.h"
 #include "fracfuncclass.h"
+
 #include <complex>
+#include <stdio.h>
+
 #ifdef __APPLE__
 #include <OpenCL/cl.h>
 #else
 #include <CL/cl.h>
 #endif
-#include <stdio.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -31,13 +34,16 @@ int Fraktal_Manager::getNumCores() {
     size_t len = 4;
     uint32_t count;
 
-    nm[0] = CTL_HW; nm[1] = HW_AVAILCPU;
+    nm[0] = CTL_HW;
+    nm[1] = HW_AVAILCPU;
     sysctl(nm, 2, &count, &len, NULL, 0);
 
     if(count < 1) {
         nm[1] = HW_NCPU;
         sysctl(nm, 2, &count, &len, NULL, 0);
-        if(count < 1) { count = 1; }
+        if(count < 1) {
+            count = 1;
+        }
     }
     return count;
 #else

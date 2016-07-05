@@ -7,8 +7,10 @@
 
 #include <QWidget>
 #include <QPainter>
+
 #include "fraktal_List.h"
 #include "fraktal_manager.h"
+
 namespace Ui {
     class RenderArea;
 }

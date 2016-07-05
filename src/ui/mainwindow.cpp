@@ -2,9 +2,11 @@
  * Copyright (C) 2014  Etienne Gramlich
  * See main.cpp for more information.
  */
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "opencl/openclhandler.h"
+
 #include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)

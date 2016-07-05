@@ -6,6 +6,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
 #include "renderarea.h"
 #include "juliainputdialog.h"
 

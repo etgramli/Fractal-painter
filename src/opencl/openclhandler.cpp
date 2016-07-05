@@ -1,11 +1,18 @@
 #include "openclhandler.h"
+
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <string.h>
+
+#ifdef __APPLE__
+#include <OpenCL/cl.h>
+#else
 #include <CL/cl.h>
+#endif
+
 
 OpenCLHandler::OpenCLHandler()
 {

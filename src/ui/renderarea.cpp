@@ -3,9 +3,11 @@
  * Copyright (C) 2014  Etienne Gramlich
  * See main.cpp for more information.
  */
+
 #include <QtGui>
 #include <QDesktopWidget>
 #include <QWheelEvent>
+
 #include "renderarea.h"
 #include "ui_renderarea.h"
 

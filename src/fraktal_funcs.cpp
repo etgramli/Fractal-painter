@@ -3,6 +3,7 @@
  * Copyright (C) 2014  Etienne Gramlich
  * See main.cpp for more information.
  */
+
 #include "fraktal_funcs.h"
 #include <complex>
 
