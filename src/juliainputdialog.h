@@ -11,7 +11,7 @@
 #include <QHBoxLayout>
 #include <QDoubleSpinBox>
 #include <QLabel>
-#include "renderarea.h"
+#include "ui/renderarea.h"
 
 class JuliaInputDialog : public QDialog {
     Q_OBJECT

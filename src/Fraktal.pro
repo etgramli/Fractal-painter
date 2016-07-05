@@ -19,8 +19,8 @@ static {
     win32: TARGET = $$join(TARGET,,,s) #this adds an s in the end, so you can seperate static build from non static build
 }
 SOURCES += main.cpp\
-        mainwindow.cpp \
-        renderarea.cpp \
+        ui/mainwindow.cpp \
+        ui/renderarea.cpp \
         fraktal_manager.cpp \
         thread.cpp \
         fracfuncclass.cpp \
@@ -28,8 +28,8 @@ SOURCES += main.cpp\
         juliainputdialog.cpp \
         opencl/openclhandler.cpp
 
-HEADERS  += mainwindow.h \
-            renderarea.h \
+HEADERS  += ui/mainwindow.h \
+            ui/renderarea.h \
             fraktal_manager.h \
             fraktal_List.h \
             fraktal_funcs.h \
