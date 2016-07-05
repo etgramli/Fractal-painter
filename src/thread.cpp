@@ -26,8 +26,9 @@ void Thread::setLine(int line, QRgb* PixelLine){
 }
 
 void Thread::run(){
-    if(Pixel == NULL)
+    if (Pixel == NULL) {
         exit(1);
+    }
 
     float fracValue;
     struct colorRGB point;
@@ -38,7 +39,7 @@ void Thread::run(){
             fracValue = fracFunc->calcFract((float) pos + centerPoint.real(),
                                             (float) line + centerPoint.imag());
 
-            point = HSVtoRGB( fracValue * 6.0, 1, fracValue==0 ? 0:1);
+            point = HSVtoRGB( fracValue * 6.0, 1, fracValue == 0 ? 0 : 1);
 
             Pixel[pos] = qRgb(point.red, point.green, point.blue);
         }

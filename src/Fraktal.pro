@@ -21,21 +21,21 @@ static {
 SOURCES += main.cpp\
         ui/mainwindow.cpp \
         ui/renderarea.cpp \
+        ui/juliainputdialog.cpp \
         fraktal_manager.cpp \
         thread.cpp \
         fracfuncclass.cpp \
         fraktal_funcs.cpp \
-        juliainputdialog.cpp \
         opencl/openclhandler.cpp
 
 HEADERS  += ui/mainwindow.h \
             ui/renderarea.h \
+            ui/juliainputdialog.h \
             fraktal_manager.h \
             fraktal_List.h \
             fraktal_funcs.h \
             thread.h \
             fracfuncclass.h \
-            juliainputdialog.h \
             opencl/openclhandler.h
 
 FORMS    +=
