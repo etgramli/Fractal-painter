@@ -19,7 +19,7 @@ add_definitions(${QT_DEFINITIONS})
 set( fraktal_HEADERSqt fraktal_manager.h juliainputdialog.h mainwindow.h renderarea.h thread.h )
 QT4_WRAP_CPP(fraktal_HEADERS_MOC ${fraktal_HEADERSqt})
 
-set( fraktal_SRC fracfuncclass.cpp fraktal_funcs.cpp fraktal_manager.cpp juliainputdialog.cpp main.cpp mainwindow.cpp renderarea.cpp thread.cpp openclhandler.cpp )
+set( fraktal_SRC fracfuncclass.cpp fraktal_funcs.cpp fraktal_manager.cpp ui/juliainputdialog.cpp main.cpp ui/mainwindow.cpp ui/renderarea.cpp thread.cpp opencl/openclhandler.cpp )
 
 add_executable( fraktal ${fraktal_SRC} ${fraktal_HEADERS_MOC} )
 
