@@ -5,7 +5,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "opencl/openclhandler.h"
+#include "../opencl/openclhandler.h"
 
 #include <QMessageBox>
 
