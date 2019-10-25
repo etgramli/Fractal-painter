@@ -2,7 +2,7 @@
 cmake_minimum_required( VERSION 2.8.11 )
 
 project( fraktal ) 
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 
 # Add path to module FindOpenCL.cmake
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
@@ -12,7 +12,7 @@ find_package( OpenCL REQUIRED )
 include_directories( ${OPENCL_INCLUDE_DIRS} )
 
 # Find the Qt4 library
-find_package(Qt4 4.8.6 REQUIRED)
+find_package(Qt4 REQUIRED)
 INCLUDE(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
 # Run moc
