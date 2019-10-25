@@ -24,7 +24,7 @@
 #include <unistd.h>
 #endif
 
-int Fraktal_Manager::getNumCores() {
+long Fraktal_Manager::getNumCores() {
 #ifdef WIN32
     SYSTEM_INFO sysinfo;
     GetSystemInfo(&sysinfo);
@@ -51,8 +51,7 @@ int Fraktal_Manager::getNumCores() {
 #endif
 }
 
-Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes)
-{
+Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes) {
     this->xRes = xRes;
     this->yRes = yRes;
     midPointX = 0.0f;
@@ -60,30 +59,29 @@ Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes)
     range = 2;
     numCores = getNumCores();
     numFract = Julia;
+    fractChanged = true;
     juliaC = std::complex<float>(0,0);
     juliaCchanged = false;
     useCPU = false;
     rangeChanged = false;
-    try
-    {   // Init OpenCL Hander
+    buffer = new unsigned char[xRes * yRes * 4];
+    globalWorkSize[0] = xRes;   // Set the work sizes so that each kernel
+    globalWorkSize[1] = yRes;   // can query its pixel position
+    localWorkSize[0] = 0;       // Work size for work groups; May set them
+    localWorkSize[1] = 0;       // to 0 for performance improvement by Implementation
+    try {
         myCLHandler = new OpenCLHandler();
 
-        // Names of the OpenCL kernels
-        const char *clKernelNames[5] = {"juliaPoint.cl",
-                                        "mandelbrotPoint.cl",
-                                        "burningShipPoint.cl",
-                                        "tricornPoint.cl",
-                                        "HSVtoRGB.cl"};
+        std::vector<std::string> clKernelNames = {
+                "juliaPoint.cl",
+                "mandelbrotPoint.cl",
+                "burningShipPoint.cl",
+                "tricornPoint.cl",
+                "HSVtoRGB.cl"};
 
-        globalWorkSize[0] = xRes;   // Set the work sizes so that each kernel
-        globalWorkSize[1] = yRes;   // can query its pixel position
-        localWorkSize[0] = 1;       // Work size for work groups; May set them
-        localWorkSize[1] = 1;       // to 0 for performance improvement by Implementation
 
-        // Image to write to by OCL functions store the fractal values as float
-        myCLHandler->create2DImageA(xRes, yRes, NULL);
-        // Image that holds the RGB valus after converting from HSV
-        myCLHandler->create2DImageARGB(xRes, yRes, NULL);
+        myCLHandler->create2DImageA(xRes, yRes, nullptr);       // Write to by OCL to store the fractal values as float
+        myCLHandler->create2DImageARGB(xRes, yRes, nullptr);    // Holds the RGB valus after converting from HSV
 
         errNum = myCLHandler->compileKernelFromFile(clKernelNames[0]);
         if(errNum == CL_SUCCESS){
@@ -91,8 +89,7 @@ Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes)
             clJuliaC.x = juliaC.real();
             clJuliaC.y = juliaC.imag();
             printf("Julia constant with OpenCL float2: (%f,%f)", clJuliaC.x, clJuliaC.y);
-            myCLHandler->createMemObj(sizeof(cl_float2), &clJuliaC,
-                                      CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR);
+            myCLHandler->createMemObj(sizeof(cl_float2), &clJuliaC, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR);
                                               //Kernel index, Argument index, Memory object index
             myCLHandler->setKernelArgWithMemObj(0           , 0             , 2);
             myCLHandler->setKernelArgWithMemObj(0           , 1             , 0);
@@ -141,15 +138,12 @@ Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes)
         else {
             throw "Setting color space conversion kernel failed";
         }
-    }
-    catch(...)
-    {
-        myCLHandler = NULL;
+    } catch(...) {
+        myCLHandler = nullptr;
     }
 }
 Fraktal_Manager::~Fraktal_Manager(){
-    if(myCLHandler != NULL)
-        delete myCLHandler;
+    delete myCLHandler;
     delete buffer;
 }
 
@@ -159,12 +153,11 @@ void Fraktal_Manager::setJuliaCimag(double imag) {
     } else {
         juliaC.imag(0.0f);
     }
-    if(myCLHandler != NULL) {   // Also update Value in OpenCL
+    if (myCLHandler != nullptr) {   // Also update Value in OpenCL
         cl_float2 clJuliaC; // Create constant for Julia Set to pass to OCL
         clJuliaC.x = juliaC.real();
         clJuliaC.y = juliaC.imag();
-        myCLHandler->overwriteMemObj(2, sizeof(cl_float2), &clJuliaC,
-                                     CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR);
+        myCLHandler->overwriteMemObj(2, sizeof(cl_float2), &clJuliaC, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR);
         myCLHandler->setKernelArgWithMemObj(0, 0, 2);
     }
     juliaCchanged = true;
@@ -175,12 +168,11 @@ void Fraktal_Manager::setJuliaCreal(double real){
     } else {
         juliaC.real(0.0f);
     }
-    if(myCLHandler != NULL) {   // Also update Value in OpenCL
+    if(myCLHandler != nullptr) {   // Also update Value in OpenCL
         cl_float2 clJuliaC; // Create constant for Julia Set to pass to OCL
         clJuliaC.x = juliaC.real();
         clJuliaC.y = juliaC.imag();
-        myCLHandler->overwriteMemObj(2, sizeof(cl_float2), &clJuliaC,
-                                     CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR);
+        myCLHandler->overwriteMemObj(2, sizeof(cl_float2), &clJuliaC, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR);
         myCLHandler->setKernelArgWithMemObj(0, 0, 2);
     }
     juliaCchanged = true;
@@ -227,7 +219,7 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
     FracFuncClass *funcObject;
 
     // Use CPU if OpenCL-Handler creation or kernel creation failed
-    if(myCLHandler == NULL || useCPU){
+    if(myCLHandler == nullptr || useCPU){
         // Initialize CPU to calculate fractals
         switch (numFract){
         case Julia:
@@ -259,8 +251,8 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
             return renderedImage;
         }
 
-        Thread threads[numCores];
-        for(int l = 0; l < numCores; l++) {
+        std::vector<Thread> threads(numCores);
+        for(long l = 0; l < numCores; l++) {
             threads[l].init(funcObject, &renderedImage, centerPoint, numCores, l);
             threads[l].start();
         }
@@ -293,17 +285,12 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
         // Convert from HSV to RGB color space
         myCLHandler->enqueueKernel( 4, 2, globalWorkSize, localWorkSize);
         // Copy back image from OpenCL device
-        buffer = new unsigned char[xRes * yRes * 4];
-
         cl::size_t<3> region;
         region[0] = xRes;
         region[1] = yRes;
         region[2] = 1;
         errNum = myCLHandler->getImageFromDevice(1, region, buffer);
-        if(errNum != CL_SUCCESS){
-            delete buffer;
-        }
-        else{
+        if(errNum == CL_SUCCESS) {
             // Copy from OpenCL Image to Qt Image
             renderedImage = QImage(buffer, xRes, yRes, QImage::Format_ARGB32);
         }

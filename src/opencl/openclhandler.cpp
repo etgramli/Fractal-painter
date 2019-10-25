@@ -1,9 +1,7 @@
 #include "openclhandler.h"
 
-#include <cstdlib>
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <string>
 #include <cstring>
 
@@ -47,7 +45,7 @@ OpenCLHandler::OpenCLHandler()
 
 OpenCLHandler::~OpenCLHandler() {}
 
-cl_int OpenCLHandler::printDeviceInfo(const cl::Device device) {
+cl_int OpenCLHandler::printDeviceInfo(const cl::Device& device) {
     cl_int errNum;
     cl_ulong value;
     std::string vendor, name, version;
@@ -110,7 +108,7 @@ cl_int OpenCLHandler::interatePlatforms(){
 cl_int OpenCLHandler::clGetGPUDevice() {
     cl_int errNum = CL_SUCCESS;
     std::cout << platforms.size() << " Platforms" << std::endl;
-    for(const cl::Platform& platform : platforms) {
+    for (const cl::Platform& platform : platforms) {
         std::vector<cl::Device> gpuDevices;
         printf("\n\nGetting GPU device IDs\n");
         errNum = platform.getDevices(CL_DEVICE_TYPE_GPU, &gpuDevices);
@@ -127,11 +125,7 @@ cl_int OpenCLHandler::clGetGPUDevice() {
 
 cl_int OpenCLHandler::createContext(){
     cl_int errNum;
-    context = cl::Context(gpu_device,
-                          NULL,
-                          NULL,
-                          NULL,
-                          &errNum);
+    context = cl::Context(gpu_device, nullptr, nullptr, nullptr, &errNum);
     if(errNum != CL_SUCCESS)
         std::cerr << "Failed to create context for platform";
     return errNum;
@@ -166,7 +160,7 @@ cl_int OpenCLHandler::createCommandQueue(){
     return errNum;
 }
 
-cl_int OpenCLHandler::compileKernelFromFile(const char *filename){
+cl_int OpenCLHandler::compileKernelFromFile(const std::string& filename){
     cl_int errNum = CL_BUILD_ERROR;
     std::ifstream kernelFile(filename);
     if(!kernelFile.is_open()){
@@ -194,11 +188,9 @@ cl_int OpenCLHandler::compileKernelFromFile(const char *filename){
         return errNum;
     }
     // Create kernel objects from program objects
-    size_t kernelNameSize = strlen(filename) - 2;
-    char *kernelName = (char*) malloc(sizeof(char) * kernelNameSize);
-    strncpy(kernelName, filename, kernelNameSize - 1);
-    kernelName[kernelNameSize-1]='\0';
-    kernels.emplace_back(programs.back(), kernelName, &errNum);
+    size_t kernelNameSize = filename.length() - 2;
+    std::string kernelName = filename.substr(0, kernelNameSize - 1);
+    kernels.emplace_back(programs.back(), kernelName.c_str(), &errNum);
     if(errNum != CL_SUCCESS){
         cl::Program currentProgram = programs.back();
         programs.pop_back();
@@ -218,22 +210,14 @@ cl_int OpenCLHandler::compileKernelFromFile(const char *filename){
         default:
             break;
         }
-        free(kernelName);
         return errNum;
     }
-    free(kernelName);
     std::cout << filename << " successfully compiled" << std::endl;
     kernelArgErrNrs.push_back(CL_INVALID_KERNEL);
     return CL_SUCCESS;
 }
 
-size_t OpenCLHandler::getNumKernels(){
-    return kernels.size();
-}
-
-void OpenCLHandler::setKernelArg(size_t kernel_index, cl_uint arg_index,
-                                 size_t arg_size, const void *arg_value)
-{
+void OpenCLHandler::setKernelArg(size_t kernel_index, cl_uint arg_index, size_t arg_size, const void *arg_value) {
     cl::Kernel krn = kernels.at(kernel_index);
     cl_int errNum = krn.setArg(arg_index, arg_size, arg_value);
     switch (errNum) {
@@ -267,10 +251,7 @@ void OpenCLHandler::setKernelArg(size_t kernel_index, cl_uint arg_index,
     kernelArgErrNrs[kernel_index] = errNum;
 }
 
-void OpenCLHandler::setKernelArgWithMemObj(size_t kernel_index,
-                                           cl_uint arg_index,
-                                           size_t memObj_index)
-{
+void OpenCLHandler::setKernelArgWithMemObj(size_t kernel_index, cl_uint arg_index, size_t memObj_index) {
     cl::Kernel krn = kernels[kernel_index];
     cl::Memory memObj = memoryObjects.at(memObj_index);
     cl_int errNum = krn.setArg(arg_index, sizeof(cl_mem), &memObj);
@@ -315,9 +296,9 @@ cl_int OpenCLHandler::enqueueKernel(size_t kernel_index, cl_uint work_dim,
     if(kernel_index < kernels.size() && kernelArgErrNrs.at(kernel_index) == CL_SUCCESS){
         // ToDo: Proper NDRange creation
         errNum = commandQueue.enqueueNDRangeKernel(kernels[kernel_index],
-                                        cl::NDRange(0, 0),
-                                        cl::NDRange(global_work_size[0], global_work_size[1]),
-                                        cl::NDRange(local_work_size[0], local_work_size[1]));
+                                                   cl::NDRange(0, 0),
+                                                   cl::NDRange(global_work_size[0], global_work_size[1]),
+                                                   cl::NDRange(local_work_size[0], local_work_size[1]));
         if(errNum != CL_SUCCESS) {
             std::cerr << "Error enqueueing kernel: " << kernel_index << std::endl;
             switch (errNum) {
@@ -346,34 +327,25 @@ cl_int OpenCLHandler::enqueueKernel(size_t kernel_index, cl_uint work_dim,
     return errNum;
 }
 
-cl_int OpenCLHandler::create2DImageARGB(size_t width, size_t height, void *host_ptr)
+cl_int OpenCLHandler::create2DImageARGB(const size_t width, const size_t height, void *host_ptr)
 {
     cl_int errNum;
-    cl::ImageFormat imgFormat(CL_ARGB, CL_UNSIGNED_INT8);
-    images.push_back( cl::Image2D(context,CL_MEM_WRITE_ONLY, imgFormat, width, height, 0,
-                                             host_ptr, &errNum) );
+    const cl::ImageFormat imgFormat(CL_ARGB, CL_UNSIGNED_INT8);
+    images.emplace_back(context,CL_MEM_WRITE_ONLY, imgFormat, width, height, 0, host_ptr, &errNum);
     return errNum;
 }
 
-cl_int OpenCLHandler::create2DImageA(size_t width, size_t height,
-                                     void *host_ptr)
-{
+cl_int OpenCLHandler::create2DImageA(size_t width, size_t height, void *host_ptr) {
     cl_int errNum;
     cl::ImageFormat imgFormat(CL_A, CL_FLOAT);
 
-    images.push_back(cl::Image2D(context,
-                                             CL_MEM_READ_WRITE,
-                                             imgFormat,
-                                             width, height, 0,
-                                             host_ptr, &errNum) );
+    images.emplace_back(context, CL_MEM_READ_WRITE, imgFormat, width, height, 0, host_ptr, &errNum);
     return errNum;
 }
 
-cl_int OpenCLHandler::createMemObj(size_t arg_size, void *arg_value,
-                                   cl_mem_flags flags){
+cl_int OpenCLHandler::createMemObj(size_t arg_size, void *arg_value, cl_mem_flags flags){
     cl_int errNum;
-    memoryObjects.push_back( cl::Buffer(context, flags, arg_size,
-                                            arg_value, &errNum) );
+    memoryObjects.push_back(cl::Buffer(context, flags, arg_size, arg_value, &errNum));
     if(errNum != CL_SUCCESS) { // Release and delete Buffer object from list
         cl::Memory memObj = memoryObjects.back();
         memoryObjects.pop_back();
@@ -382,23 +354,16 @@ cl_int OpenCLHandler::createMemObj(size_t arg_size, void *arg_value,
 }
 
 bool OpenCLHandler::overwriteMemObj(size_t index, size_t arg_size, void *arg_value, cl_mem_flags flags){
-    if(index >= memoryObjects.size())
-        return false;
+    if(index >= memoryObjects.size()) return false;
     cl_int errNum;
     // Create new memory object at the same index
     memoryObjects[index] = cl::Buffer(context, flags, arg_size, arg_value, &errNum);
     return errNum == CL_SUCCESS;
 }
 
-cl::Memory OpenCLHandler::getMemObj(size_t idx){
-    return memoryObjects.at(idx);
-}
-
 cl_int OpenCLHandler::getImageFromDevice(size_t idx, cl::size_t<3> region, void *dest) {
-    cl_int errNum;
     const cl::size_t<3> origin;
-    errNum = commandQueue.enqueueReadImage(images[idx], CL_TRUE,
-                                origin, region, 0, 0, dest, 0);
+    cl_int errNum = commandQueue.enqueueReadImage(images[idx], CL_TRUE, origin, region, 0, 0, dest, nullptr);
     if(errNum != CL_SUCCESS) {
         std::cerr << "Failed to read image from device" << std::endl;
     }

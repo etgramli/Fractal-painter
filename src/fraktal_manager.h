@@ -18,7 +18,6 @@ class Fraktal_Manager
 public:
     Fraktal_Manager(size_t xRes = 1920, size_t yRes = 1080);
     ~Fraktal_Manager();
-    enum fraktal_Liste select_fraktal;
     void setJuliaCimag(double imag);
     void setJuliaCreal(double real);
     void setJuliaC(std::complex<float> c);
@@ -29,8 +28,8 @@ public:
     void setCPUrender(bool useCPU);
 
 private:
-    int getNumCores();
-    int numCores;
+    static long getNumCores();
+    long numCores;
     int numFract;
     bool fractChanged;
     size_t xRes, yRes;
@@ -43,8 +42,8 @@ private:
     bool rangeChanged;
     OpenCLHandler *myCLHandler;
     cl_int errNum;
-    size_t globalWorkSize[2];
-    size_t localWorkSize[2];
+    size_t globalWorkSize[2]{};
+    size_t localWorkSize[2]{};
     unsigned char *buffer;
 };
 
