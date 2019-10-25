@@ -7,26 +7,25 @@
 #include <OpenCL/cl.h>
 #else
 #include <CL/cl.h>
+#include <CL/cl.hpp>
 #endif
 
 
 class OpenCLHandler
 {
 private:
-    cl_uint numPlatforms;
-    cl_platform_id *platforms;
-    cl_uint usedPlatform;
-    cl_device_id GPUDevice;
-    cl_context context;
-    cl_command_queue commandQueue;
-    std::vector<cl_program> programs;
-    std::vector<cl_kernel> kernels;
-    // Error numbers set by paasing the arguments to the according kernel
-    std::vector<cl_int> kernelArgErrNrs;
-    std::vector<cl_mem> memoryObjects;
+    std::vector<cl::Platform> platforms;
+    cl::Device gpu_device;  // Used GPU device
+    cl::Context context;
+    cl::CommandQueue commandQueue;
+    std::vector<cl::Program> programs;
+    std::vector<cl::Kernel> kernels;
+    std::vector<cl_int> kernelArgErrNrs;    // Error numbers set by passing the arguments to the according kernel
+    std::vector<cl::Memory> memoryObjects;
+    std::vector<cl::Image2D> images;
+
 
     cl_int interatePlatforms();
-    cl_int clGetPlatforms();
     cl_int clGetGPUDevice();
     cl_int createContext();
     cl_int createCommandQueue();
@@ -36,11 +35,11 @@ public:
     ~OpenCLHandler();
 
     // Prints information about the GPU device
-    cl_int printDeviceInfo(cl_device_id device);
+    cl_int printDeviceInfo(cl::Device device);
 
     /* Compiles the kernel in the file specified by filename,
      * creates a program object and a kernel object.
-     * The filename msut have the extension .cl and has to
+     * The filename must have the extension .cl and has to
      * be in the directory of the executable.
      */
     cl_int compileKernelFromFile(const char *filename);
@@ -49,7 +48,7 @@ public:
      */
     void setKernelArg(size_t kernel_index, cl_uint arg_index,
                       size_t arg_size, const void *arg_value);
-    // Set Kernel argument with an existing mempry object
+    // Set Kernel argument with an existing memory object
     void setKernelArgWithMemObj(size_t kernel_index, cl_uint arg_index,
                                 size_t memObj_index);
     // Returns true if all Arguments for the kernel were set properly
@@ -67,8 +66,8 @@ public:
     cl_int createMemObj(size_t arg_size, void *arg_value, cl_mem_flags flags);
     bool overwriteMemObj(size_t index, size_t arg_size, void *arg_value,
                          cl_mem_flags flags);
-    cl_mem getMemObj(size_t idx);
-    cl_int getImageFromDevice(size_t idx, size_t region[3], void *dest);
+    cl::Memory getMemObj(size_t idx);
+    cl_int getImageFromDevice(size_t idx, cl::size_t<3> region, void *dest);
 };
 
 #endif // OPENCLHANDLER_H

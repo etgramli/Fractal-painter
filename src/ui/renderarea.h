@@ -19,7 +19,7 @@ class RenderArea : public QWidget
 {
     Q_OBJECT
 public:
-    explicit RenderArea(QWidget *parent = 0);
+    explicit RenderArea(QWidget *parent = nullptr);
     ~RenderArea();
     void setRenderDevice(bool useCPU);
     void saveBmp();

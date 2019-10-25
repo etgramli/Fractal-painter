@@ -27,7 +27,7 @@ float burningShipPoint(int xRes, int yRes, float x, float y,
 
 // Function(s) for colors
 struct colorRGB {
-    unsigned char red, green, blue;
+    uint_fast8_t red, green, blue;
 };
 
 //Hue = [0;6]; Saturation, Value = [0;1]

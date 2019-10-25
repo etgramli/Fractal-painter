@@ -15,19 +15,21 @@ inline float sqrAbs(std::complex<float> a){
 float juliaPoint(int xRes, int yRes, float x, float y,
                  std::complex<float> c, float range, float midX, float midY){
     std::complex<float> cz(0.0f, 0.0f);
-    cz.real() = range * (x / (float)xRes - 0.5f) + midX;
-    cz.imag() = range * (y / (float)yRes - 0.5f) + midY;
+    cz.real(range * (x / (float)xRes - 0.5f) + midX);
+    cz.imag(range * (y / (float)yRes - 0.5f) + midY);
 
     // Calcuate max. interations depending on the level of zoom
     int maxiter = 360;
-    if(range > 0.0036)
-        maxiter = 360 - (float)140*range;
+    if(range > 0.0036) {
+        maxiter = 360 - (float) 140 * range;
+    }
 
-    for(int l = 0; l < maxiter; l++){
+    for (int l = 0; l < maxiter; l++){
         cz = std::pow(cz,2);
         cz += c;
-        if(sqrAbs(cz) > 400)
-            return (float)l/maxiter;
+        if (sqrAbs(cz) > 400) {
+            return (float) l / maxiter;
+        }
     }
     return 0.0f;
 }
@@ -35,8 +37,8 @@ float juliaPoint(int xRes, int yRes, float x, float y,
 float mandelbrotPoint(int xRes, int yRes, float x, float y, float range,
                       float midX, float midY) {
     std::complex<float> c, z(0.0f, 0.0f);
-    c.real() = 1.5f * range * (x / (float)xRes - 0.5f) + midX;
-    c.imag() = 1.0f * range * (y / (float)yRes - 0.5f) + midY;
+    c.real(1.5f * range * (x / (float)xRes - 0.5f) + midX);
+    c.imag(1.0f * range * (y / (float)yRes - 0.5f) + midY);
 
     // Calcuate max. interations depending on the level of zoom
     int maxiter = 360;
@@ -54,8 +56,8 @@ float mandelbrotPoint(int xRes, int yRes, float x, float y, float range,
 float tricornPoint(int xRes, int yRes, float x, float y, float range,
                    float midX, float midY) {
     std::complex<float> c, z(0.0f, 0.0f);
-    c.real() = 1.5f * range * (x / (float)xRes - 0.5f) + midX;
-    c.imag() = 1.0f * range * (y / (float)yRes - 0.5f) + midY;
+    c.real(1.5f * range * (x / (float)xRes - 0.5f) + midX);
+    c.imag(1.0f * range * (y / (float)yRes - 0.5f) + midY);
 
     // Calcuate max. interations depending on the level of zoom
     int maxiter = 360;
@@ -75,8 +77,8 @@ float burningShipPoint(int xRes, int yRes, float x, float y, float range,
                        float midX, float midY)
 {
     std::complex<float> c, p, p0;
-    c.real() = 2.0f * range * (x / (float)xRes - 0.5f) + midX;
-    c.imag() = 2.0f * range * (y / (float)yRes - 0.5f) + midY;
+    c.real(2.0f * range * (x / (float)xRes - 0.5f) + midX);
+    c.imag(2.0f * range * (y / (float)yRes - 0.5f) + midY);
 
     // Calcuate max. interations depending on the level of zoom
     int maxiter = 360;
@@ -97,11 +99,10 @@ float burningShipPoint(int xRes, int yRes, float x, float y, float range,
 // Convert form HSV color space to RGB
 struct colorRGB HSVtoRGB(float h, float s, float v)	//Hue = [0;6]; Saturation, Value = [0;1]
 {
-    struct colorRGB rgb;
+    struct colorRGB rgb{0,0,0};
     int i;
     float f, p, q, t;
-    if( s == 0 ) {
-        // achromatic (grey)
+    if( s == 0 ) {  // achromatic (grey)
         rgb.red = rgb.green = rgb.blue = v;
         return rgb;
     }

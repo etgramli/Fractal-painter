@@ -7,7 +7,7 @@
 #include "fracfuncclass.h"
 
 #include <complex>
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef __APPLE__
 #include <OpenCL/cl.h>
@@ -155,9 +155,9 @@ Fraktal_Manager::~Fraktal_Manager(){
 
 void Fraktal_Manager::setJuliaCimag(double imag) {
     if(imag <= 5.0f && imag >= -5.0f){
-        juliaC.imag() = imag;
+        juliaC.imag(imag);
     } else {
-        juliaC.imag() = 0.0f;
+        juliaC.imag(0.0f);
     }
     if(myCLHandler != NULL) {   // Also update Value in OpenCL
         cl_float2 clJuliaC; // Create constant for Julia Set to pass to OCL
@@ -171,9 +171,9 @@ void Fraktal_Manager::setJuliaCimag(double imag) {
 }
 void Fraktal_Manager::setJuliaCreal(double real){
     if(real <= 5.0f && real >= -5.0f){
-        juliaC.real() = real;
+        juliaC.real(real);
     } else {
-        juliaC.real() = 0.0f;
+        juliaC.real(0.0f);
     }
     if(myCLHandler != NULL) {   // Also update Value in OpenCL
         cl_float2 clJuliaC; // Create constant for Julia Set to pass to OCL
@@ -294,7 +294,11 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
         myCLHandler->enqueueKernel( 4, 2, globalWorkSize, localWorkSize);
         // Copy back image from OpenCL device
         buffer = new unsigned char[xRes * yRes * 4];
-        size_t region[3] = {xRes, yRes, 1};
+
+        cl::size_t<3> region;
+        region[0] = xRes;
+        region[1] = yRes;
+        region[2] = 1;
         errNum = myCLHandler->getImageFromDevice(1, region, buffer);
         if(errNum != CL_SUCCESS){
             delete buffer;
