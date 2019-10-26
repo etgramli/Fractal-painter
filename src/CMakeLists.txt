@@ -2,7 +2,13 @@
 cmake_minimum_required( VERSION 2.8.11 )
 
 project( fraktal ) 
-set(CMAKE_BUILD_TYPE Release)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 # Add path to module FindOpenCL.cmake
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")
