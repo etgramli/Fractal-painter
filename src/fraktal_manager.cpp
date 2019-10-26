@@ -64,11 +64,17 @@ Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes) {
     juliaCchanged = false;
     useCPU = false;
     rangeChanged = false;
-    buffer = new unsigned char[xRes * yRes * 4];
     globalWorkSize[0] = xRes;   // Set the work sizes so that each kernel
     globalWorkSize[1] = yRes;   // can query its pixel position
     localWorkSize[0] = 0;       // Work size for work groups; May set them
     localWorkSize[1] = 0;       // to 0 for performance improvement by Implementation
+    try {
+        buffer = new unsigned char[xRes * yRes * 4];
+    } catch (...) {
+        // ToDo: Better error handling
+        buffer = nullptr;
+    }
+
     try {
         myCLHandler = new OpenCLHandler();
 
@@ -98,30 +104,17 @@ Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes) {
             else
                 printf("Finished: Setting kernel args for juliaPoint: NOT successfully\n");
         }
-        errNum = myCLHandler->compileKernelFromFile(clKernelNames[1]);
-        if(errNum == CL_SUCCESS){
-            myCLHandler->setKernelArgWithMemObj(1, 0, 0);
-            if(myCLHandler->validateKernelArgs(1))
-                printf("Finished: Setting kernel args for mandelbrotPoint: successfully\n");
-            else
-                printf("Finished: Setting kernel args for mandelbrotPoint: NOT successfully\n");
-        }
-        errNum = myCLHandler->compileKernelFromFile(clKernelNames[2]);
-        if(errNum == CL_SUCCESS){
-            myCLHandler->setKernelArgWithMemObj(2, 0, 0);
-            if(myCLHandler->validateKernelArgs(2))
-                printf("Finished: Setting kernel args for burningShipPoint: successfully\n");
-            else
-                printf("Finished: Setting kernel args for burningShipPoint: NOT successfully\n");
-        }
-        errNum = myCLHandler->compileKernelFromFile(clKernelNames[3]);
-        if(errNum == CL_SUCCESS){
-            myCLHandler->setKernelArgWithMemObj(3, 0, 0);
-            if(myCLHandler->validateKernelArgs(3))
-                printf("Finished: Setting kernel args for tricornPoint: successfully\n");
-            else{
-                printf("Finished: Setting kernel args for tricornPoint: NOT successfully\n");
-                throw "Can not execute kernel for color space conversion";
+        for (int i = 1; i <= 3; ++i) {
+            errNum = myCLHandler->compileKernelFromFile(clKernelNames[i]);
+            if (errNum == CL_SUCCESS) {
+                myCLHandler->setKernelArgWithMemObj(i, 0, 0);
+                printf("Finished: Setting kernel args for ");
+                printf("%s", clKernelNames[i].c_str());
+                if (myCLHandler->validateKernelArgs(i)) {
+                     printf(": successfully\n");
+                } else {
+                    printf(": NOT successfully");
+                }
             }
         }
         errNum = myCLHandler->compileKernelFromFile(clKernelNames[4]);
@@ -195,14 +188,10 @@ void Fraktal_Manager::setMidPoint(int x, int y){
 }
 
 void Fraktal_Manager::setFractal(int numFract){
-    if(numFract == this->numFract)
-        return;
-    else if (numFract > Tricorn)
-        return;
-    else {
+    if(numFract != this->numFract && numFract <= Tricorn) {
         fractChanged = true;
         this->numFract = numFract;
-        // If another fractal chosen reset range and midpoint
+        // Reset range and midpoint on fractal change
         range = 2;
         midPointX = 0.0f;
         midPointY = 0.0f;
@@ -280,10 +269,8 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
             myCLHandler->setKernelArg(numFract, 3, sizeof(cl_float), &midPointY);
         }
 
-        // Enqueue the kernel to the respective fractal
-        myCLHandler->enqueueKernel(numFract, 2, globalWorkSize, localWorkSize);
-        // Convert from HSV to RGB color space
-        myCLHandler->enqueueKernel( 4, 2, globalWorkSize, localWorkSize);
+        myCLHandler->enqueueKernel(numFract, 2, globalWorkSize, localWorkSize); // Enqueue respective fractal kernel
+        myCLHandler->enqueueKernel( 4, 2, globalWorkSize, localWorkSize);       // Convert from HSV to RGB color space
         // Copy back image from OpenCL device
         cl::size_t<3> region;
         region[0] = xRes;
@@ -291,8 +278,7 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
         region[2] = 1;
         errNum = myCLHandler->getImageFromDevice(1, region, buffer);
         if(errNum == CL_SUCCESS) {
-            // Copy from OpenCL Image to Qt Image
-            renderedImage = QImage(buffer, xRes, yRes, QImage::Format_ARGB32);
+            renderedImage = QImage(buffer, xRes, yRes, QImage::Format_ARGB32);  // Copy from OpenCL Image to Qt Image
         }
     }
     image = renderedImage;
