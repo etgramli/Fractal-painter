@@ -5,6 +5,7 @@
 
 #include "fraktal_manager.h"
 #include "fracfuncclass.h"
+#define CL_TARGET_OPENCL_VERSION 120
 
 #include <complex>
 #include <cstdio>

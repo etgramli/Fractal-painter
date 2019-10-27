@@ -1,5 +1,6 @@
 #ifndef OPENCLHANDLER_H
 #define OPENCLHANDLER_H
+#define CL_TARGET_OPENCL_VERSION 120
 
 #include <vector>
 
@@ -20,7 +21,7 @@ private:
     cl::CommandQueue commandQueue;
     std::vector<cl::Program> programs;
     std::vector<cl::Kernel> kernels;
-    std::vector<cl_int> kernelArgErrNrs;    // Error numbers set by passing the arguments to the according kernel
+    std::vector<int> kernelArgErrNrs;    // Error numbers set by passing the arguments to the according kernel
     std::vector<cl::Memory> memoryObjects;
     std::vector<cl::Image2D> images;
 

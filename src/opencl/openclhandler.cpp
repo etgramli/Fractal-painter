@@ -1,5 +1,7 @@
 #include "openclhandler.h"
 
+#define CL_TARGET_OPENCL_VERSION 120
+
 #include <iostream>
 #include <fstream>
 #include <string>
