@@ -20,7 +20,7 @@ class RenderArea : public QWidget
     Q_OBJECT
 public:
     explicit RenderArea(QWidget *parent = nullptr);
-    ~RenderArea();
+    ~RenderArea() override;
     void setRenderDevice(bool useCPU);
     void saveBmp();
     void calculateImage(int numFractal);
@@ -32,8 +32,8 @@ public slots:
     void setJuliaCreal(float real);
 
 protected:
-    void paintEvent(QPaintEvent *event);
-    void wheelEvent(QWheelEvent *event);
+    void paintEvent(QPaintEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
 private:
     Ui::RenderArea *ui;

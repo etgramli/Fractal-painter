@@ -19,8 +19,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow() override;
 
 public slots:
     void saveImage();
@@ -30,7 +30,7 @@ public slots:
     void showAboutBox();
 
 protected:
-void  closeEvent(QCloseEvent*);
+void  closeEvent(QCloseEvent*) override;
 
 private:
     Ui::MainWindow *ui;

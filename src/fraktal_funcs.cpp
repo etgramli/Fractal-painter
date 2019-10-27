@@ -82,9 +82,9 @@ float burningShipPoint(int xRes, int yRes, float x, float y, float range,
     c.imag(2.0f * range * (y / (float)yRes - 0.5f) + midY);
 
     // Calcuate max. interations depending on the level of zoom
-    int maxiter = 360;
+    float maxiter = 360;
     if(range > 0.0036)
-        maxiter = 360 - (float)140*range;
+        maxiter = 360.0f - 140.0f * range;
 
     for(int l = 0; l < maxiter; l++){
         p = std::complex<float>(std::fabs(p0.real()),

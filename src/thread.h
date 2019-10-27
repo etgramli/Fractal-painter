@@ -16,7 +16,7 @@ class Thread : public QThread
     Q_OBJECT
 public:
     Thread();
-    ~Thread();
+    ~Thread() override;
 
     void init(FracFuncClass *funcClass,
               QImage *img,
@@ -25,16 +25,16 @@ public:
               int offsetThread);
 
 protected:
-    void run();
+    void run() override;
 
 private:
-    FracFuncClass *fracFunc;
+    FracFuncClass *fracFunc{};
 
-    QImage *image;
-    QRgb *Pixel;
-    int width, height;  //Image dimensions
+    QImage *image{};
+    QRgb *Pixel{};
+    int width{}, height{};  //Image dimensions
     std::complex<float> c, centerPoint;
-    int numThreads, offset; //Number of threads, offset of this one
+    int numThreads{}, offset{}; //Number of threads, offset of this one
 };
 
 #endif // THREAD_H

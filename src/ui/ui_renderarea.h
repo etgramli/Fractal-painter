@@ -22,7 +22,7 @@ class Ui_RenderArea
 {
 public:
 
-    void setupUi(QWidget *RenderArea)
+    static void setupUi(QWidget *RenderArea)
     {
         if (RenderArea->objectName().isEmpty())
             RenderArea->setObjectName("RenderArea");
@@ -35,7 +35,7 @@ public:
 
     static void retranslateUi(QWidget *RenderArea)
     {
-        RenderArea->setWindowTitle(QApplication::translate("RenderArea", "Form", 0));
+        RenderArea->setWindowTitle(QApplication::translate("RenderArea", "Form", nullptr));
     } // retranslateUi
 
 };

@@ -17,7 +17,7 @@
 class JuliaInputDialog : public QDialog {
     Q_OBJECT
 public:
-    JuliaInputDialog(RenderArea *parent);
+    explicit JuliaInputDialog(RenderArea *parent);
 
     QDoubleSpinBox *imagBox, *realBox;
 

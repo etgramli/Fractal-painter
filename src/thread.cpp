@@ -5,8 +5,8 @@
  */
 #include "thread.h"
 
-Thread::Thread() {}
-Thread::~Thread() {}
+Thread::Thread() = default;
+Thread::~Thread() = default;
 
 void Thread::init(FracFuncClass *funcClass,
                   QImage *img,
