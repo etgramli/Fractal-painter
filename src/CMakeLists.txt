@@ -9,6 +9,7 @@ endif()
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+set(CMAKE_CXX_STANDARD 11)
 
 # Add path to module FindOpenCL.cmake
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/CMake")

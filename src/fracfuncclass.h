@@ -13,7 +13,7 @@ class FracFuncClass
 public:
     FracFuncClass(int xRes, int yRes, float range, float midX, float midY)
         : xRes(xRes), yRes(yRes), range(range), midX(midX), midY(midY) {}
-    virtual ~FracFuncClass() {}
+    virtual ~FracFuncClass() = default;
     //virtual float operator()(float x, float y) = 0;
     virtual float calcFract(float x, float y) = 0;
 
@@ -28,7 +28,7 @@ class JuliaFuncClass : public FracFuncClass
 public:
     JuliaFuncClass(int xRes, int yRes, std::complex<float> c, float range, float midX, float midY)
         : FracFuncClass(xRes, yRes, range, midX, midY), c(c) {}
-    float calcFract(float x, float y);
+    float calcFract(float x, float y) override;
 
 private:
     std::complex<float> c;
@@ -39,7 +39,7 @@ class MandelbrotFuncClass : public FracFuncClass
 public:
     MandelbrotFuncClass(int xRes, int yRes, float range, float midX, float midY)
         : FracFuncClass(xRes, yRes, range, midX, midY) {}
-    float calcFract(float x, float y);
+    float calcFract(float x, float y) override;
 };
 
 class BurningShipFuncClass : public FracFuncClass
@@ -47,7 +47,7 @@ class BurningShipFuncClass : public FracFuncClass
 public:
     BurningShipFuncClass(int xRes, int yRes, float range, float midX, float midY)
         : FracFuncClass(xRes, yRes, range, midX, midY) {}
-    float calcFract(float x, float y);
+    float calcFract(float x, float y) override;
 };
 
 class TricornFuncClass : public FracFuncClass
@@ -55,7 +55,7 @@ class TricornFuncClass : public FracFuncClass
 public:
     TricornFuncClass(int xRes, int yRes, float range, float midX, float midY)
         : FracFuncClass(xRes, yRes, range, midX, midY) {}
-    float calcFract(float x, float y);
+    float calcFract(float x, float y) override;
 };
 
 #endif // FRACFUNCCLASS_H

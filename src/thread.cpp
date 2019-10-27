@@ -8,9 +8,11 @@
 Thread::Thread() {}
 Thread::~Thread() {}
 
-void Thread::init(FracFuncClass *funcClass, QImage *img,
+void Thread::init(FracFuncClass *funcClass,
+                  QImage *img,
                   std::complex<float> centerPoint,
-                  int numThreads, int offsetThread) {
+                  int numThreads,
+                  int offsetThread) {
     this->fracFunc = funcClass;
     this->image = img;
     this->width = image->width();
@@ -20,18 +22,13 @@ void Thread::init(FracFuncClass *funcClass, QImage *img,
     this->offset = offsetThread;
 }
 
-void Thread::setLine(int line, QRgb* PixelLine){
-    this->line = line;
-    Pixel = PixelLine;
-}
-
 void Thread::run(){
-    if (Pixel == NULL) {
+    if (Pixel == nullptr) {
         exit(1);
     }
 
     float fracValue;
-    struct colorRGB point;
+    struct colorRGB point{};
 
     for(int line = offset; line < height; line += numThreads) {
         Pixel = reinterpret_cast<QRgb*>(image->scanLine(line));  //Reading line of pixels
@@ -39,10 +36,9 @@ void Thread::run(){
             fracValue = fracFunc->calcFract((float) pos + centerPoint.real(),
                                             (float) line + centerPoint.imag());
 
-            point = HSVtoRGB( fracValue * 6.0, 1, fracValue == 0 ? 0 : 1);
+            point = HSVtoRGB( fracValue * 6.0f, 1, fracValue == 0 ? 0 : 1);
 
             Pixel[pos] = qRgb(point.red, point.green, point.blue);
         }
     }
-    return;
 }

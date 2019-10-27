@@ -18,11 +18,11 @@ public:
     Thread();
     ~Thread();
 
-    void init(FracFuncClass *funcClass, QImage *img,
+    void init(FracFuncClass *funcClass,
+              QImage *img,
               std::complex<float> centerPoint,
-              int numThreads, int offsetThread);
-    //void init(QImage *img, MyComplex c, MyComplex centerPoint, int numThreads, int offsetThread);
-    void setLine(int line, QRgb* PixelLine);
+              int numThreads,
+              int offsetThread);
 
 protected:
     void run();
@@ -33,7 +33,6 @@ private:
     QImage *image;
     QRgb *Pixel;
     int width, height;  //Image dimensions
-    int line;           //Image line to compute
     std::complex<float> c, centerPoint;
     int numThreads, offset; //Number of threads, offset of this one
 };

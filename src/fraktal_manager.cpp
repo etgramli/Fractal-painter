@@ -132,39 +132,28 @@ Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes) {
             throw "Setting color space conversion kernel failed";
         }
     } catch(...) {
+        delete myCLHandler;
         myCLHandler = nullptr;
     }
 }
 Fraktal_Manager::~Fraktal_Manager(){
     delete myCLHandler;
-    delete buffer;
+    delete[] buffer;
 }
 
 void Fraktal_Manager::setJuliaCimag(double imag) {
-    if(imag <= 5.0f && imag >= -5.0f){
-        juliaC.imag(imag);
-    } else {
-        juliaC.imag(0.0f);
-    }
+    juliaC.imag(imag > 5 || imag < -5 ? 0.0f : imag);
     if (myCLHandler != nullptr) {   // Also update Value in OpenCL
-        cl_float2 clJuliaC; // Create constant for Julia Set to pass to OCL
-        clJuliaC.x = juliaC.real();
-        clJuliaC.y = juliaC.imag();
+        cl_float2 clJuliaC{{juliaC.real(), juliaC.imag()}}; // Create constant for Julia Set to pass to OCL
         myCLHandler->overwriteMemObj(2, sizeof(cl_float2), &clJuliaC, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR);
         myCLHandler->setKernelArgWithMemObj(0, 0, 2);
     }
     juliaCchanged = true;
 }
 void Fraktal_Manager::setJuliaCreal(double real){
-    if(real <= 5.0f && real >= -5.0f){
-        juliaC.real(real);
-    } else {
-        juliaC.real(0.0f);
-    }
+    juliaC.real(real > 5 || real < -5 ? 0.0f : real);
     if(myCLHandler != nullptr) {   // Also update Value in OpenCL
-        cl_float2 clJuliaC; // Create constant for Julia Set to pass to OCL
-        clJuliaC.x = juliaC.real();
-        clJuliaC.y = juliaC.imag();
+        cl_float2 clJuliaC{{juliaC.real(), juliaC.imag()}}; // Create constant for Julia Set to pass to OCL
         myCLHandler->overwriteMemObj(2, sizeof(cl_float2), &clJuliaC, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR);
         myCLHandler->setKernelArgWithMemObj(0, 0, 2);
     }
@@ -240,6 +229,7 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
             return renderedImage;
         }
 
+        printf("Num Cores: %ld\n", numCores);
         std::vector<Thread> threads(numCores);
         for(long l = 0; l < numCores; l++) {
             threads[l].init(funcObject, &renderedImage, centerPoint, numCores, l);
