@@ -18,11 +18,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     setWindowState(Qt::WindowMaximized);
     numFract = Mandelbrot;
     useCPU = true;
-    //numColorMode = 0;
+    numColorMode = 0;
 
     // Set menu
     // file menu
-    QMenu *fileMenu = new QMenu(tr("&File"), this);
+    auto *fileMenu = new QMenu(tr("&File"), this);
     menuBar()->addMenu(fileMenu);
     fileMenu->addAction(QIcon("images/page_white.png"),
                         tr("&Save"),
@@ -33,23 +33,23 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
                         qApp, SLOT(quit()),
                         QKeySequence(tr("Ctrl+Q", "File|Quit")));
     // FRAKTAL  MENU
-    QAction *juliaAction = new QAction(tr("&Julia-Set"), this);
+    auto *juliaAction = new QAction(tr("&Julia-Set"), this);
     juliaAction->setCheckable(true);
     juliaAction->setShortcut(tr("Ctrl+J"));
     juliaAction->setStatusTip(tr("Paint a Julia-Set"));
-    QAction *mandelbrotAction = new QAction(tr("&Mandelbrot-Set"), this);
+    auto *mandelbrotAction = new QAction(tr("&Mandelbrot-Set"), this);
     mandelbrotAction->setCheckable(true);
     mandelbrotAction->setShortcut(tr("Ctrl+M"));
     mandelbrotAction->setStatusTip(tr("Paint the Mabdelbrot-Set"));
-    QAction *burningShipAction = new QAction(tr("&Burnung Ship"), this);
+    auto *burningShipAction = new QAction(tr("&Burnung Ship"), this);
     burningShipAction->setCheckable(true);
     burningShipAction->setShortcut(tr("Ctrl+B"));
     burningShipAction->setStatusTip(tr("Paint the burning ship fractal"));
-    QAction *mandelbrotSineAction = new QAction(tr("&Tricorn"), this);
+    auto *mandelbrotSineAction = new QAction(tr("&Tricorn"), this);
     mandelbrotSineAction->setCheckable(true);
     mandelbrotSineAction->setShortcut(tr("Ctrl+T"));
     mandelbrotSineAction->setStatusTip(tr("Paint the Tricorn"));
-    QActionGroup *fractalList = new QActionGroup(this);
+    auto *fractalList = new QActionGroup(this);
     fractalList->addAction(juliaAction);
     fractalList->addAction(mandelbrotAction);
     fractalList->addAction(burningShipAction);
@@ -57,29 +57,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     fracList = fractalList->actions();
     mandelbrotAction->setChecked(true);
 
-    QMenu *selectMenu = new QMenu(tr("&Choose fractal"), this);
+    auto *selectMenu = new QMenu(tr("&Choose fractal"), this);
     menuBar()->addMenu(selectMenu);
     selectMenu->addActions(fractalList->actions());
 
     // options menu
-    QMenu *optionMenu = new QMenu(tr("&Options"), this);
+    auto *optionMenu = new QMenu(tr("&Options"), this);
     menuBar()->addMenu(optionMenu);
     optionMenu->addAction(QIcon("images/page_white.png"),
                         tr("&Repaint image"),
                         this, SLOT(renderImage()));
     optionMenu->addSeparator();
-    QAction *useCPU = new QAction(tr("&Use CPU"), this);
-    useCPU->setCheckable(true);
-    useCPU->setShortcut(tr("Ctrl+C"));
-    useCPU->setStatusTip(tr("Use CPU for rendering"));
-    QAction *useGPU = new QAction(tr("Use &GPU"), this);
+    auto *useCpuAction = new QAction(tr("&Use CPU"), this);
+    useCpuAction->setCheckable(true);
+    useCpuAction->setShortcut(tr("Ctrl+C"));
+    useCpuAction->setStatusTip(tr("Use CPU for rendering"));
+    auto *useGPU = new QAction(tr("Use &GPU"), this);
     useGPU->setCheckable(true);
     useGPU->setShortcut(tr("Ctrl+G"));
     useGPU->setStatusTip(tr("Use GPU for rendering"));
-    QActionGroup *deviceGroup = new QActionGroup(this);
-    deviceGroup->addAction(useCPU);
+    auto *deviceGroup = new QActionGroup(this);
+    deviceGroup->addAction(useCpuAction);
     deviceGroup->addAction(useGPU);
-    useCPU->setChecked(true);
+    useCpuAction->setChecked(true);
     optionMenu->addActions(deviceGroup->actions());
     devList = deviceGroup->actions();
     OpenCLHandler *myCLHandler;
@@ -88,13 +88,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     if(myCLHandler == NULL ){
         useGPU->setDisabled(true);
     } else {
-        useCPU->setChecked(false);
+        useCpuAction->setChecked(false);
         this->useCPU = false;
         useGPU->setChecked(true);
     }
 
     // About Message Box
-    QAction *aboutMessage = new QAction(tr("&About"), this);
+    auto *aboutMessage = new QAction(tr("&About"), this);
     menuBar()->addAction(aboutMessage);
 
     juliaDialog = new JuliaInputDialog(fraktalRenderArea);

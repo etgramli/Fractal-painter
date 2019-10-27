@@ -43,7 +43,7 @@ OpenCLHandler::OpenCLHandler()
     }
 }
 
-OpenCLHandler::~OpenCLHandler() {}
+OpenCLHandler::~OpenCLHandler() = default;
 
 cl_int OpenCLHandler::printDeviceInfo(const cl::Device& device) {
     cl_int errNum;
@@ -133,7 +133,7 @@ cl_int OpenCLHandler::createContext(){
 
 cl_int OpenCLHandler::createCommandQueue(){
     cl_int errNum;
-    size_t deviceBufferSize = -1;
+    size_t deviceBufferSize;
     // Get the size of the device buffer
     errNum = context.getInfo(CL_CONTEXT_DEVICES, &deviceBufferSize);
     if(errNum != CL_SUCCESS){

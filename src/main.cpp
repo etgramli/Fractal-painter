@@ -27,8 +27,8 @@ int main(int argc, char *argv[]) {
     QTranslator editTranslator;
     QString filename;
     filename = QString("Fraktal_%1").arg(QLocale::system().name());
-    editTranslator.load(filename, qApp->applicationDirPath() );
-    a.installTranslator(&editTranslator);
+    editTranslator.load(filename, qApp->applicationDirPath());
+    QApplication::installTranslator(&editTranslator);
 
     // Redirect stdout and stderr to corresponding (log-)files
     FILE *out = freopen("log_out.txt", "w", stdout);
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 
     MainWindow w;
     w.show();
-    int retVal = a.exec();
+    int retVal = QApplication::exec();
 
     fclose(stdout);
     fclose(stderr);

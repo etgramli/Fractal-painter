@@ -20,16 +20,13 @@ float juliaPoint(int xRes, int yRes, float x, float y,
     cz.imag(range * (y / (float)yRes - 0.5f) + midY);
 
     // Calcuate max. interations depending on the level of zoom
-    float maxiter = 360;
-    if(range > 0.0036) {
-        maxiter = 360.0f - 140.0f * range;
-    }
+    const int maxIterations = range <= 0.0036f ? 360 : (int) (360.0f - 140.0f * range);
 
-    for (int l = 0; l < maxiter; l++){
+    for (int l = 0; l < maxIterations; l++){
         cz = std::pow(cz,2);
         cz += c;
         if (sqrAbs(cz) > 400) {
-            return (float) l / maxiter;
+            return (float) l / (float) maxIterations;
         }
     }
     return 0.0f;
@@ -42,14 +39,11 @@ float mandelbrotPoint(int xRes, int yRes, float x, float y, float range,
     c.imag(1.0f * range * (y / (float)yRes - 0.5f) + midY);
 
     // Calcuate max. interations depending on the level of zoom
-    float maxiter = 360;
-    if(range > 0.0036)
-        maxiter = 360 - (float)140*range;
+    const int maxIterations = range <= 0.0036f ? 360 : (int) (360.0f - 140.0f * range);
 
-    for(int l = 0; l < maxiter; l++){
+    for(int l = 0; l < maxIterations; l++){
         z = z*z + c;
-        if(sqrAbs(z) > 4)
-            return (float)l / maxiter;
+        if(sqrAbs(z) > 4) return (float)l / (float) maxIterations;
     }
     return 0.0f;
 }
@@ -61,15 +55,13 @@ float tricornPoint(int xRes, int yRes, float x, float y, float range,
     c.imag(1.0f * range * (y / (float)yRes - 0.5f) + midY);
 
     // Calcuate max. interations depending on the level of zoom
-    float maxiter = 360;
-    if(range > 0.0036)
-        maxiter = 360 - (float)140*range;
+    const int maxIterations = range <= 0.0036f ? 360 : (int) (360.0f - 140.0f * range);
 
-    for(int l = 0; l < maxiter; l++){
+    for(int l = 0; l < maxIterations; l++){
         z = std::conj(z);
         z = z*z + c;
         if(sqrAbs(z) > 4)
-            return (float)l / maxiter;
+            return (float)l / (float) maxIterations;
     }
     return 0.0f;
 }
@@ -82,17 +74,14 @@ float burningShipPoint(int xRes, int yRes, float x, float y, float range,
     c.imag(2.0f * range * (y / (float)yRes - 0.5f) + midY);
 
     // Calcuate max. interations depending on the level of zoom
-    float maxiter = 360;
-    if(range > 0.0036)
-        maxiter = 360.0f - 140.0f * range;
+    const int maxIterations = range <= 0.0036f ? 360 : (int) (360.0f - 140.0f * range);
 
-    for(int l = 0; l < maxiter; l++){
+    for(int l = 0; l < maxIterations; l++){
         p = std::complex<float>(std::fabs(p0.real()),
                                 std::fabs(p0.imag()));
         p = p*p + c;
         p0 = p;
-        if (sqrAbs(p) > 10)
-            return (float)l / maxiter;
+        if (sqrAbs(p) > 10) return (float) l / (float) maxIterations;
     }
     return 0.0f;
 }
@@ -107,7 +96,7 @@ struct colorRGB HSVtoRGB(float h, float s, float v)	//Hue = [0;6]; Saturation, V
         return rgb;
     }
     int i = (int) std::floor( h );  // sector 0 to 5
-    f = h - i;                      // factorial part of h
+    f = h - (float)i;                      // factorial part of h
     p = v * (1 - s);
     q = v * (1 - s * f);
     t = v * (1 - s * (1 - f));

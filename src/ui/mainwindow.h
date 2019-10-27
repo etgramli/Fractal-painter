@@ -43,7 +43,7 @@ private:
     bool useCPU;
 
     QList<QAction *> colorList;
-    int numColorMode;
+    int numColorMode{};
 
 };
 

@@ -21,16 +21,17 @@ public:
     void setJuliaCimag(float imag);
     void setJuliaCreal(float real);
     void setJuliaC(std::complex<float> c);
-    void setFractal(int numFract);
+    void setFractal(int newNumFractal);
     void setRange(int delta);
     void setMidPoint(int x, int y);
     QImage paint(std::complex<float> centerPoint);
-    void setCPUrender(bool useCPU);
+    void setCPUrender(bool useNowCPU);
 
 private:
+    static const cl_mem_flags clFlagsReadOnlyCopyHostPtr = CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR;
     static int getNumCores();
     int numCores;
-    int numFract;
+    int numFractal;
     bool fractChanged;
     int xRes, yRes;
     float range;

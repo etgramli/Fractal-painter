@@ -13,7 +13,7 @@
 
 RenderArea::RenderArea(QWidget *parent) : QWidget(parent), ui(new Ui::RenderArea)
 {
-    ui->setupUi(this);
+    Ui_RenderArea::setupUi(this);
     QDesktopWidget desktop; // Get the resolution od the main screen
     this->xRes = desktop.availableGeometry(desktop.primaryScreen()).width();
     this->yRes = desktop.availableGeometry(desktop.primaryScreen()).height();

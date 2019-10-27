@@ -58,7 +58,7 @@ Fraktal_Manager::Fraktal_Manager(int xRes, int yRes) {
     midPointY = 0.0f;
     range = 2;
     numCores = getNumCores();
-    numFract = Julia;
+    numFractal = Julia;
     fractChanged = true;
     juliaC = std::complex<float>(0,0);
     juliaCchanged = false;
@@ -95,7 +95,7 @@ Fraktal_Manager::Fraktal_Manager(int xRes, int yRes) {
             clJuliaC.x = juliaC.real();
             clJuliaC.y = juliaC.imag();
             printf("Julia constant with OpenCL float2: (%f,%f)", clJuliaC.x, clJuliaC.y);
-            myCLHandler->createMemObj(sizeof(cl_float2), &clJuliaC, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR);
+            myCLHandler->createMemObj(sizeof(cl_float2), &clJuliaC, clFlagsReadOnlyCopyHostPtr);
                                               //Kernel index, Argument index, Memory object index
             myCLHandler->setKernelArgWithMemObj(0           , 0             , 2);
             myCLHandler->setKernelArgWithMemObj(0           , 1             , 0);
@@ -145,7 +145,7 @@ void Fraktal_Manager::setJuliaCimag(float imag) {
     juliaC.imag(imag > 5 || imag < -5 ? 0.0f : imag);
     if (myCLHandler != nullptr) {   // Also update Value in OpenCL
         cl_float2 clJuliaC{{juliaC.real(), juliaC.imag()}}; // Create constant for Julia Set to pass to OCL
-        myCLHandler->overwriteMemObj(2, sizeof(cl_float2), &clJuliaC, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR);
+        myCLHandler->overwriteMemObj(2, sizeof(cl_float2), &clJuliaC, clFlagsReadOnlyCopyHostPtr);
         myCLHandler->setKernelArgWithMemObj(0, 0, 2);
     }
     juliaCchanged = true;
@@ -154,7 +154,7 @@ void Fraktal_Manager::setJuliaCreal(float real){
     juliaC.real(real > 5 || real < -5 ? 0.0f : real);
     if(myCLHandler != nullptr) {   // Also update Value in OpenCL
         cl_float2 clJuliaC{{juliaC.real(), juliaC.imag()}}; // Create constant for Julia Set to pass to OCL
-        myCLHandler->overwriteMemObj(2, sizeof(cl_float2), &clJuliaC, CL_MEM_READ_ONLY|CL_MEM_COPY_HOST_PTR);
+        myCLHandler->overwriteMemObj(2, sizeof(cl_float2), &clJuliaC, clFlagsReadOnlyCopyHostPtr);
         myCLHandler->setKernelArgWithMemObj(0, 0, 2);
     }
     juliaCchanged = true;
@@ -163,23 +163,25 @@ void Fraktal_Manager::setJuliaC(std::complex<float> c) {
     setJuliaCimag(c.imag());
     setJuliaCreal(c.real());
 }
-void Fraktal_Manager::setRange(int delta){
+void Fraktal_Manager::setRange(int delta) {
     // Delta is positive if the wheel is scrolled away from the user
     // and negative if the wheel is scrolled towards the user
-    int mouseWheelSteps = delta / 120;
+    const float mouseWheelSteps = (float) delta / 120.0f;
     range = range - (range / 16.0f) * mouseWheelSteps;
     rangeChanged = true;
 }
-void Fraktal_Manager::setMidPoint(int x, int y){
+void Fraktal_Manager::setMidPoint(int x, int y) {
     // Change midpoint of the image
-    midPointX += ((float) x/xRes - 0.5f) * range / 2.0f;
-    midPointY += ((float) y/yRes - 0.5f) * range / 2.0f;
+    const float xRatio = (float) x / (float)xRes;
+    const float yRatio = (float) y / (float)yRes;
+    midPointX += (xRatio - 0.5f) * range / 2.0f;
+    midPointY += (yRatio - 0.5f) * range / 2.0f;
 }
 
-void Fraktal_Manager::setFractal(int numFract){
-    if(numFract != this->numFract && numFract <= Tricorn) {
+void Fraktal_Manager::setFractal(int newNumFractal){
+    if(newNumFractal != numFractal && newNumFractal <= Tricorn) {
         fractChanged = true;
-        this->numFract = numFract;
+        numFractal = newNumFractal;
         // Reset range and midpoint on fractal change
         range = 2;
         midPointX = 0.0f;
@@ -199,7 +201,7 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
     // Use CPU if OpenCL-Handler creation or kernel creation failed
     if(myCLHandler == nullptr || useCPU){
         // Initialize CPU to calculate fractals
-        switch (numFract){
+        switch (numFractal){
         case Julia:
             funcObject = new JuliaFuncClass(renderedImage.width(),
                                             renderedImage.height(),
@@ -247,20 +249,20 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
     } else {
         // Initialize CPU to calculate fractals
         // Set variable kernel arguments: range, midpoint X, Y
-        switch (numFract){
+        switch (numFractal){
         case Julia:
             myCLHandler->setKernelArg(Julia, 2, sizeof(cl_float), &range);
             myCLHandler->setKernelArg(Julia, 3, sizeof(cl_float), &midPointX);
             myCLHandler->setKernelArg(Julia, 4, sizeof(cl_float), &midPointY);
             break;
         default:    // For every other function the parameters have those indices
-            myCLHandler->setKernelArg(numFract, 1, sizeof(cl_float), &range);
-            myCLHandler->setKernelArg(numFract, 2, sizeof(cl_float), &midPointX);
-            myCLHandler->setKernelArg(numFract, 3, sizeof(cl_float), &midPointY);
+            myCLHandler->setKernelArg(numFractal, 1, sizeof(cl_float), &range);
+            myCLHandler->setKernelArg(numFractal, 2, sizeof(cl_float), &midPointX);
+            myCLHandler->setKernelArg(numFractal, 3, sizeof(cl_float), &midPointY);
         }
 
-        myCLHandler->enqueueKernel(numFract, 2, globalWorkSize, localWorkSize); // Enqueue respective fractal kernel
-        myCLHandler->enqueueKernel( 4, 2, globalWorkSize, localWorkSize);       // Convert from HSV to RGB color space
+        myCLHandler->enqueueKernel(numFractal, 2, globalWorkSize, localWorkSize); // Enqueue respective fractal kernel
+        myCLHandler->enqueueKernel(         4, 2, globalWorkSize, localWorkSize); // Convert from HSV to RGB color space
         // Copy back image from OpenCL device
         cl::size_t<3> region;
         region[0] = xRes;
@@ -275,6 +277,6 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
     return renderedImage;
 }
 
-void Fraktal_Manager::setCPUrender(bool useCPU){
-    this->useCPU = useCPU;
+void Fraktal_Manager::setCPUrender(bool useNowCPU){
+    this->useCPU = useNowCPU;
 }
