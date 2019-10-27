@@ -35,7 +35,7 @@ public:
     ~OpenCLHandler();
 
     // Prints information about the GPU device
-    cl_int printDeviceInfo(const cl::Device& device);
+    static cl_int printDeviceInfo(const cl::Device& device);
 
     /* Compiles the kernel in the file specified by filename,
      * creates a program object and a kernel object.

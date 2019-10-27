@@ -33,7 +33,7 @@ public:
         QMetaObject::connectSlotsByName(RenderArea);
     } // setupUi
 
-    void retranslateUi(QWidget *RenderArea)
+    static void retranslateUi(QWidget *RenderArea)
     {
         RenderArea->setWindowTitle(QApplication::translate("RenderArea", "Form", 0));
     } // retranslateUi

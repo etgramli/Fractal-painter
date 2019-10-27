@@ -5,6 +5,7 @@
  */
 
 #include "fraktal_funcs.h"
+#include <cmath>
 #include <complex>
 
 // Calculates the absolute value squared for better performance
@@ -19,9 +20,9 @@ float juliaPoint(int xRes, int yRes, float x, float y,
     cz.imag(range * (y / (float)yRes - 0.5f) + midY);
 
     // Calcuate max. interations depending on the level of zoom
-    int maxiter = 360;
+    float maxiter = 360;
     if(range > 0.0036) {
-        maxiter = 360 - (float) 140 * range;
+        maxiter = 360.0f - 140.0f * range;
     }
 
     for (int l = 0; l < maxiter; l++){
@@ -41,7 +42,7 @@ float mandelbrotPoint(int xRes, int yRes, float x, float y, float range,
     c.imag(1.0f * range * (y / (float)yRes - 0.5f) + midY);
 
     // Calcuate max. interations depending on the level of zoom
-    int maxiter = 360;
+    float maxiter = 360;
     if(range > 0.0036)
         maxiter = 360 - (float)140*range;
 
@@ -60,7 +61,7 @@ float tricornPoint(int xRes, int yRes, float x, float y, float range,
     c.imag(1.0f * range * (y / (float)yRes - 0.5f) + midY);
 
     // Calcuate max. interations depending on the level of zoom
-    int maxiter = 360;
+    float maxiter = 360;
     if(range > 0.0036)
         maxiter = 360 - (float)140*range;
 
@@ -100,14 +101,13 @@ float burningShipPoint(int xRes, int yRes, float x, float y, float range,
 struct colorRGB HSVtoRGB(float h, float s, float v)	//Hue = [0;6]; Saturation, Value = [0;1]
 {
     struct colorRGB rgb{0,0,0};
-    int i;
     float f, p, q, t;
     if( s == 0 ) {  // achromatic (grey)
         rgb.red = rgb.green = rgb.blue = v;
         return rgb;
     }
-    i = floor( h );     // sector 0 to 5
-    f = h - i;			// factorial part of h
+    int i = (int) std::floor( h );  // sector 0 to 5
+    f = h - i;                      // factorial part of h
     p = v * (1 - s);
     q = v * (1 - s * f);
     t = v * (1 - s * (1 - f));

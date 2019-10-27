@@ -11,8 +11,7 @@
 #include "renderarea.h"
 #include "ui_renderarea.h"
 
-RenderArea::RenderArea(QWidget *parent)
-            : QWidget(parent), ui(new Ui::RenderArea)
+RenderArea::RenderArea(QWidget *parent) : QWidget(parent), ui(new Ui::RenderArea)
 {
     ui->setupUi(this);
     QDesktopWidget desktop; // Get the resolution od the main screen
@@ -52,11 +51,11 @@ void RenderArea::setJuliaC(std::complex<float> c) {
     fraktal->setJuliaC(c);
     redrawImage();
 }
-void RenderArea::setJuliaCimag(double imag) {
+void RenderArea::setJuliaCimag(float imag) {
     fraktal->setJuliaCimag(imag);
     redrawImage();
 }
-void RenderArea::setJuliaCreal(double real) {
+void RenderArea::setJuliaCreal(float real) {
     fraktal->setJuliaCreal(real);
     redrawImage();
 }

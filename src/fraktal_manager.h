@@ -16,10 +16,10 @@
 class Fraktal_Manager
 {
 public:
-    Fraktal_Manager(size_t xRes = 1920, size_t yRes = 1080);
+    Fraktal_Manager(int xRes = 1920, int yRes = 1080);
     ~Fraktal_Manager();
-    void setJuliaCimag(double imag);
-    void setJuliaCreal(double real);
+    void setJuliaCimag(float imag);
+    void setJuliaCreal(float real);
     void setJuliaC(std::complex<float> c);
     void setFractal(int numFract);
     void setRange(int delta);
@@ -28,11 +28,11 @@ public:
     void setCPUrender(bool useCPU);
 
 private:
-    static long getNumCores();
-    long numCores;
+    static int getNumCores();
+    int numCores;
     int numFract;
     bool fractChanged;
-    size_t xRes, yRes;
+    int xRes, yRes;
     float range;
     float midPointX, midPointY;
     QImage image;

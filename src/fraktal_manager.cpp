@@ -24,7 +24,7 @@
 #include <unistd.h>
 #endif
 
-long Fraktal_Manager::getNumCores() {
+int Fraktal_Manager::getNumCores() {
 #ifdef WIN32
     SYSTEM_INFO sysinfo;
     GetSystemInfo(&sysinfo);
@@ -47,11 +47,11 @@ long Fraktal_Manager::getNumCores() {
     }
     return count;
 #else
-    return sysconf(_SC_NPROCESSORS_ONLN);
+    return (int) sysconf(_SC_NPROCESSORS_ONLN);
 #endif
 }
 
-Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes) {
+Fraktal_Manager::Fraktal_Manager(int xRes, int yRes) {
     this->xRes = xRes;
     this->yRes = yRes;
     midPointX = 0.0f;
@@ -141,7 +141,7 @@ Fraktal_Manager::~Fraktal_Manager(){
     delete[] buffer;
 }
 
-void Fraktal_Manager::setJuliaCimag(double imag) {
+void Fraktal_Manager::setJuliaCimag(float imag) {
     juliaC.imag(imag > 5 || imag < -5 ? 0.0f : imag);
     if (myCLHandler != nullptr) {   // Also update Value in OpenCL
         cl_float2 clJuliaC{{juliaC.real(), juliaC.imag()}}; // Create constant for Julia Set to pass to OCL
@@ -150,7 +150,7 @@ void Fraktal_Manager::setJuliaCimag(double imag) {
     }
     juliaCchanged = true;
 }
-void Fraktal_Manager::setJuliaCreal(double real){
+void Fraktal_Manager::setJuliaCreal(float real){
     juliaC.real(real > 5 || real < -5 ? 0.0f : real);
     if(myCLHandler != nullptr) {   // Also update Value in OpenCL
         cl_float2 clJuliaC{{juliaC.real(), juliaC.imag()}}; // Create constant for Julia Set to pass to OCL
@@ -229,9 +229,9 @@ QImage Fraktal_Manager::paint(std::complex<float> centerPoint){
             return renderedImage;
         }
 
-        printf("Num Cores: %ld\n", numCores);
+        printf("Num Cores: %d\n", numCores);
         std::vector<Thread> threads(numCores);
-        for(long l = 0; l < numCores; l++) {
+        for(int l = 0; l < numCores; l++) {
             threads[l].init(funcObject, &renderedImage, centerPoint, numCores, l);
             threads[l].start();
         }

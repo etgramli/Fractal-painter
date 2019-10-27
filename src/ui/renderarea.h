@@ -23,14 +23,13 @@ public:
     ~RenderArea();
     void setRenderDevice(bool useCPU);
     void saveBmp();
-    void paintImage(QPainter &painter);
     void calculateImage(int numFractal);
     void redrawImage();
     void setJuliaC(std::complex<float> c);
 
 public slots:
-    void setJuliaCimag(double imag);
-    void setJuliaCreal(double real);
+    void setJuliaCimag(float imag);
+    void setJuliaCreal(float real);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -41,7 +40,7 @@ private:
     QImage img;
     Fraktal_Manager *fraktal;
     int currentFraktal;
-    size_t xRes, yRes;
+    int xRes, yRes;
 };
 
 #endif // RENDERAREA_H

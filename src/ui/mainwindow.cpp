@@ -140,11 +140,11 @@ void MainWindow::changeFractal(QAction *action) {
 
 void MainWindow::changeDevice(QAction *action){
     int deviceNum = devList.indexOf(action);
-    if( (useCPU == true && deviceNum == 0) ||
-            (useCPU == false && deviceNum == 1) ||
-            (deviceNum > 1) )
+    if((useCPU && deviceNum == 0) ||
+       (!useCPU && deviceNum == 1) ||
+       (deviceNum > 1) )
         return;
-    useCPU = (deviceNum == 0) ? true : false;
+    useCPU = deviceNum == 0;
     fraktalRenderArea->setRenderDevice(useCPU);
 }
 
