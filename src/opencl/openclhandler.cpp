@@ -157,7 +157,6 @@ cl_int OpenCLHandler::createCommandQueue(){
     commandQueue = cl::CommandQueue(context, gpu_device, 0, &errNum);
     if(errNum != CL_SUCCESS){
         std::cerr << "Failed to create commandQueue for first GPU device";
-        return errNum;
     }
     return errNum;
 }
@@ -291,16 +290,34 @@ void OpenCLHandler::setKernelArgWithMemObj(size_t kernel_index, cl_uint arg_inde
 bool OpenCLHandler::validateKernelArgs(size_t kernel_index){
     return kernelArgErrNrs.at(kernel_index) == CL_SUCCESS;
 }
-cl_int OpenCLHandler::enqueueKernel(size_t kernel_index, cl_uint work_dim,
+cl_int OpenCLHandler::enqueueKernel(size_t kernel_index,
+                                    cl_uint work_dim,
                                     const size_t *global_work_size,
-                                    const size_t *local_work_size){
+                                    const size_t *local_work_size) {
     cl_int errNum = CL_FALSE;
-    if(kernel_index < kernels.size() && kernelArgErrNrs.at(kernel_index) == CL_SUCCESS){
-        // ToDo: Proper NDRange creation
-        errNum = commandQueue.enqueueNDRangeKernel(kernels[kernel_index],
-                                                   cl::NDRange(0, 0),
-                                                   cl::NDRange(global_work_size[0], global_work_size[1]),
-                                                   cl::NDRange(local_work_size[0], local_work_size[1]));
+    cl::NDRange globalOffset;
+    cl::NDRange globalWorkSize;
+    cl::NDRange localWorkSize;
+    switch (work_dim) {
+        case 2:
+            globalOffset = cl::NDRange(0, 0);
+            globalWorkSize = cl::NDRange(global_work_size[0], global_work_size[1]);
+            localWorkSize = cl::NDRange(local_work_size[0], local_work_size[1]);
+            break;
+        case 3:
+            globalOffset = cl::NDRange(0, 0, 0);
+            globalWorkSize = cl::NDRange(global_work_size[0], global_work_size[1], global_work_size[2]);
+            localWorkSize = cl::NDRange(local_work_size[0], local_work_size[1], local_work_size[2]);
+            break;
+        case 1:
+        default:
+            globalOffset = cl::NDRange(0);
+            globalWorkSize = cl::NDRange(global_work_size[0]);
+            localWorkSize = cl::NDRange(local_work_size[0]);
+            break;
+    }
+    if (kernel_index < kernels.size() && kernelArgErrNrs.at(kernel_index) == CL_SUCCESS) {
+        errNum = commandQueue.enqueueNDRangeKernel(kernels[kernel_index], globalOffset, globalWorkSize, localWorkSize);
         if(errNum != CL_SUCCESS) {
             std::cerr << "Error enqueueing kernel: " << kernel_index << std::endl;
             switch (errNum) {
@@ -329,18 +346,16 @@ cl_int OpenCLHandler::enqueueKernel(size_t kernel_index, cl_uint work_dim,
     return errNum;
 }
 
-cl_int OpenCLHandler::create2DImageARGB(const size_t width, const size_t height, void *host_ptr)
-{
+cl_int OpenCLHandler::create2DImageARGB(const size_t width, const size_t height, void *host_ptr) {
     cl_int errNum;
     const cl::ImageFormat imgFormat(CL_ARGB, CL_UNSIGNED_INT8);
-    images.emplace_back(context,CL_MEM_WRITE_ONLY, imgFormat, width, height, 0, host_ptr, &errNum);
+    images.emplace_back(context, CL_MEM_WRITE_ONLY, imgFormat, width, height, 0, host_ptr, &errNum);
     return errNum;
 }
 
 cl_int OpenCLHandler::create2DImageA(size_t width, size_t height, void *host_ptr) {
     cl_int errNum;
     cl::ImageFormat imgFormat(CL_A, CL_FLOAT);
-
     images.emplace_back(context, CL_MEM_READ_WRITE, imgFormat, width, height, 0, host_ptr, &errNum);
     return errNum;
 }
