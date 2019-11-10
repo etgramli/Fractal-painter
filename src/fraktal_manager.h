@@ -16,7 +16,7 @@
 class Fraktal_Manager
 {
 public:
-    explicit Fraktal_Manager(int xRes = 1920, int yRes = 1080);
+    explicit Fraktal_Manager(size_t xRes = 1920, size_t yRes = 1080);
     ~Fraktal_Manager();
     void setJuliaCimag(float imag);
     void setJuliaCreal(float real);

@@ -84,8 +84,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     devList = deviceGroup->actions();
     OpenCLHandler *myCLHandler;
     try { myCLHandler = new OpenCLHandler(); }
-    catch(...){ myCLHandler = NULL; }
-    if(myCLHandler == NULL ){
+    catch(...){ myCLHandler = nullptr; }
+    if(myCLHandler == nullptr ){
         useGPU->setDisabled(true);
     } else {
         useCpuAction->setChecked(false);

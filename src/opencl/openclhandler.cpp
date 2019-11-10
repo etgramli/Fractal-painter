@@ -1,4 +1,5 @@
 #include "openclhandler.h"
+#include "../exceptions/ConstructorException.h"
 
 #define CL_TARGET_OPENCL_VERSION 120
 
@@ -41,7 +42,7 @@ OpenCLHandler::OpenCLHandler()
         std::cout << "Finished: Getting command queue" << std::endl;
     }
     if(errNum != CL_SUCCESS) {
-        throw "Failed to create object of OpenCLHandler!";
+        throw ConstructorException("Failed to create object of OpenCLHandler!");
     }
 }
 
@@ -294,7 +295,7 @@ cl_int OpenCLHandler::enqueueKernel(size_t kernel_index,
                                     cl_uint work_dim,
                                     const size_t *global_work_size,
                                     const size_t *local_work_size) {
-    cl_int errNum = CL_FALSE;
+    cl_int errNum = CL_INVALID_KERNEL;
     cl::NDRange globalOffset;
     cl::NDRange globalWorkSize;
     cl::NDRange localWorkSize;
@@ -342,7 +343,7 @@ cl_int OpenCLHandler::enqueueKernel(size_t kernel_index,
             }
         }
     }
-    //std::cout << "Enqueued kernel " << kernel_index << std::endl;
+    std::cout << "Enqueued kernel " << kernel_index << std::endl;
     return errNum;
 }
 
@@ -353,7 +354,7 @@ cl_int OpenCLHandler::create2DImageARGB(const size_t width, const size_t height,
     return errNum;
 }
 
-cl_int OpenCLHandler::create2DImageA(size_t width, size_t height, void *host_ptr) {
+cl_int OpenCLHandler::create2DImageA(const size_t width, const size_t height, void *host_ptr) {
     cl_int errNum;
     cl::ImageFormat imgFormat(CL_A, CL_FLOAT);
     images.emplace_back(context, CL_MEM_READ_WRITE, imgFormat, width, height, 0, host_ptr, &errNum);

@@ -5,6 +5,8 @@
 
 #include "fraktal_manager.h"
 #include "fracfuncclass.h"
+#include "exceptions/KernelException.h"
+
 #define CL_TARGET_OPENCL_VERSION 120
 
 #include <complex>
@@ -52,7 +54,7 @@ int Fraktal_Manager::getNumCores() {
 #endif
 }
 
-Fraktal_Manager::Fraktal_Manager(int xRes, int yRes) {
+Fraktal_Manager::Fraktal_Manager(size_t xRes, size_t yRes) {
     this->xRes = xRes;
     this->yRes = yRes;
     midPointX = 0.0f;
@@ -126,11 +128,11 @@ Fraktal_Manager::Fraktal_Manager(int xRes, int yRes) {
                 printf("Finished: Setting kernel args for HSVtoRGB: successfully\n");
             else{
                 printf("Finished: Setting kernel args for HSVtoRGB: NOT successfully\n");
-                throw "Can not execute kernel for color space conversion";
+                throw KernelException("Can not execute kernel for color space conversion");
             }
         }
         else {
-            throw "Setting color space conversion kernel failed";
+            throw KernelException("Setting color space conversion kernel failed");
         }
     } catch(...) {
         delete myCLHandler;
