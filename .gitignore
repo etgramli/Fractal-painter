@@ -86,3 +86,18 @@ cmake-build-*/
 
 # IntelliJ
 /out/
+src/.idea
+
+build-Fraktal-Desktop-Debug
+build-Fraktal-Desktop-Release
+CMakefiles
+
+CMakeCache.txt
+cmake_install.cmake
+fraktal
+Makefile
+*.cbp
+*.cxx
+*.cxx_parameters
+*.pro.user
+*.txt
