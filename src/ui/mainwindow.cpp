@@ -26,11 +26,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     menuBar()->addMenu(fileMenu);
     fileMenu->addAction(QIcon("images/page_white.png"),
                         tr("&Save"),
-                        this, SLOT(saveImage()),
+                        this,
+                        SLOT(saveImage()),
                         QKeySequence(tr("Ctrl+S", "File|Save")));
     fileMenu->addAction(QIcon("images/page_white.png"),
                         tr("&Quit"),
-                        qApp, SLOT(quit()),
+                        dynamic_cast<QObject*>(qApp),
+                        SLOT(quit()),
                         QKeySequence(tr("Ctrl+Q", "File|Quit")));
     // FRAKTAL  MENU
     auto *juliaAction = new QAction(tr("&Julia-Set"), this);

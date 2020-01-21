@@ -40,7 +40,6 @@ private:
     QImage img;
     Fraktal_Manager *fraktal;
     int currentFraktal;
-    int xRes, yRes;
 };
 
 #endif // RENDERAREA_H

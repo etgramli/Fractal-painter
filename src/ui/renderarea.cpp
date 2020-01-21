@@ -14,19 +14,22 @@
 RenderArea::RenderArea(QWidget *parent) : QWidget(parent), ui(new Ui::RenderArea)
 {
     Ui_RenderArea::setupUi(this);
-    QDesktopWidget desktop; // Get the resolution od the main screen
-    this->xRes = desktop.availableGeometry(desktop.primaryScreen()).width();
-    this->yRes = desktop.availableGeometry(desktop.primaryScreen()).height();
-    img = QImage(this->xRes, this->yRes, QImage::Format_ARGB32);
-    fraktal = new Fraktal_Manager(xRes, yRes);
+    const QDesktopWidget desktop; // Get the resolution od the main screen
+    const QRect desktopGeometry = desktop.availableGeometry(desktop.primaryScreen());
+    const int width = desktopGeometry.width() > 0 ? desktopGeometry.width() : 1920;
+    const int height = desktopGeometry.height() > 0 ? desktopGeometry.height() : 1080;
+    img = QImage(width, height, QImage::Format_ARGB32);
+    fraktal = new Fraktal_Manager(width, height);
     currentFraktal = Mandelbrot;
-    setEnabled(true);   // Must be enabled to recieve mouse wheel event
+    setEnabled(true);   // Must be enabled to receive mouse wheel event
 }
+
 RenderArea::~RenderArea()
 {
     delete ui;
     delete fraktal;
 }
+
 void RenderArea::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
@@ -36,6 +39,7 @@ void RenderArea::paintEvent(QPaintEvent *event){
     img = fraktal->paint(std::complex<float>(0,0));
     painter.drawImage(0, 0, img);
 }
+
 void RenderArea::calculateImage(int numFractal){
     this->currentFraktal = numFractal;
     update();
@@ -47,18 +51,22 @@ void RenderArea::saveBmp(){
 void RenderArea::redrawImage() {
     update();
 }
+
 void RenderArea::setJuliaC(std::complex<float> c) {
     fraktal->setJuliaC(c);
     redrawImage();
 }
+
 void RenderArea::setJuliaCimag(float imag) {
     fraktal->setJuliaCimag(imag);
     redrawImage();
 }
+
 void RenderArea::setJuliaCreal(float real) {
     fraktal->setJuliaCreal(real);
     redrawImage();
 }
+
 void RenderArea::setRenderDevice(bool useCPU){
     fraktal->setCPUrender(useCPU);
 }

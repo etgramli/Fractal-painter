@@ -16,7 +16,7 @@
 class Fraktal_Manager
 {
 public:
-    explicit Fraktal_Manager(size_t xRes = 1920, size_t yRes = 1080);
+    explicit Fraktal_Manager(size_t xRes, size_t yRes);
     ~Fraktal_Manager();
     void setJuliaCimag(float imag);
     void setJuliaCreal(float real);
@@ -33,7 +33,7 @@ private:
     int numCores;
     int numFractal;
     bool fractChanged;
-    int xRes, yRes;
+    size_t xRes, yRes;
     float range;
     float midPointX, midPointY;
     QImage image;
